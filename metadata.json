@@ -1,0 +1,6 @@
+{
+  "name": "BrainX India",
+  "description": "BrainX India | Unwind the Genius. Official platform offering DMIT biometric assessments, Centre Brain Ignition, Modern-Day Parenting Challenges, and Value Education curriculums designed to discover and align child potential.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
