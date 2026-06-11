@@ -181,6 +181,65 @@ Refrain from using robotic bulleted responses. Speak like an elegant, smart chil
     }
   });
 
+  // AI Event Summary Generation Endpoint
+  app.post("/api/generate-summary", async (req, res) => {
+    const { title, type, ctaProgram } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ error: "Event Title is required." });
+    }
+
+    try {
+      const client = getGeminiClient();
+      
+      const systemInstruction = `You are a professional copywriting assistant for BrainX India, a premium child cognitive development platform.
+Your task is to write a single, compelling, highly engaging one-sentence summary/description for an event, seminar, or announcement.
+The summary must be concise (approx 15-25 words), professional, and emotionally resonant for parents. Focus on child development, cognitive brain mapping, screen detox, focus improvement, or human-superior skills in the AI era.
+Do NOT use quotes in your output. Return only the summary text itself.`;
+
+      const prompt = `Generate a single short summary sentence for an event with Title: "${title}"${type ? `, Type: "${type}"` : ""}${ctaProgram ? `, Category: "${ctaProgram}"` : ""}.`;
+
+      if (client) {
+        const response = await client.models.generateContent({
+          model: "gemini-3.5-flash",
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          config: {
+            systemInstruction: systemInstruction,
+            temperature: 0.7,
+            maxOutputTokens: 100,
+          }
+        });
+
+        const summary = response.text?.trim().replace(/^["']|["']$/g, "") || "Special active session. Learn de-addiction techniques, parenting skills, value systems, and core brain coordination.";
+        return res.json({ summary, apiUsed: true });
+      } else {
+        // Rules-based fallback summary based on title/category
+        const summary = provideFallbackSummary(title, ctaProgram);
+        return res.json({ summary, apiUsed: false });
+      }
+    } catch (error: any) {
+      console.error("Gemini API Error in generate-summary route:", error);
+      const summary = provideFallbackSummary(title, ctaProgram);
+      return res.json({ summary, apiUsed: false, error: error?.message || "Internal server error" });
+    }
+  });
+
+  function provideFallbackSummary(title: string, ctaProgram?: string): string {
+    const t = title.toLowerCase();
+    const cat = ctaProgram ? ctaProgram.toLowerCase() : "";
+    
+    if (t.includes("screen") || t.includes("detox") || t.includes("addiction") || cat === "parenting") {
+      return "Learn exact home-detox protocols to stop electronic screens from cannibalizing prefrontal attention spans, centering core neuro-focus.";
+    }
+    if (t.includes("fingerprint") || t.includes("ridge") || t.includes("dmit") || cat === "dmit") {
+      return "An interactive live demonstration for parents and students to map Howard Gardner sensory modalities. Take a direct fingerprint baseline test live.";
+    }
+    if (t.includes("activation") || t.includes("blindfold") || t.includes("alpha") || cat === "midbrain") {
+      return "Witness our certified blindfold reading practitioners demonstrate spatial vibration and color awareness, with clinical feedback.";
+    }
+    return `Special active session for '${title}'. Learn de-addiction techniques, parenting skills, value systems, and core brain coordination.`;
+  }
+
   // Comprehensive static fallback advisory generator when API key is not present
   function provideScientificFallbackAdvisory(message: string, age: string, topic: string): string {
     const query = message.toLowerCase();

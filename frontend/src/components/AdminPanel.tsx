@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Calendar, FileText, LogOut } from "lucide-react";
+import { Plus, Trash2, Pencil, Calendar, FileText, LogOut, Sparkles, Loader2 } from "lucide-react";
 
 interface Event {
   id: number;
@@ -18,6 +18,7 @@ interface Event {
   typeColor: string;
   borderColor: string;
   titleHover: string;
+  summary?: string;
 }
 
 interface CaseFile {
@@ -33,6 +34,56 @@ interface CaseFile {
   parentProfession: string;
   childProfile: string;
 }
+
+const formatEventDate = (dateVal: Date | string): string => {
+  if (!dateVal) return "";
+  const d = dateVal instanceof Date ? dateVal : new Date(dateVal);
+  if (isNaN(d.getTime())) return "";
+
+  const fullMonths = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const month = fullMonths[d.getMonth()];
+  const day = String(d.getDate()).padStart(2, '0');
+  let hours = d.getHours();
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  const hourStr = String(hours).padStart(2, '0');
+
+  return `${month} ${day}, ${hourStr}:${minutes} ${ampm} IST`;
+};
+
+const toDatetimeLocalString = (dateVal: Date | string): string => {
+  if (!dateVal) return "";
+  const d = dateVal instanceof Date ? dateVal : new Date(dateVal);
+  if (isNaN(d.getTime())) return "";
+
+  const ten = (i: number) => (i < 10 ? '0' : '') + i;
+  const YYYY = d.getFullYear();
+  const MM = ten(d.getMonth() + 1);
+  const DD = ten(d.getDate());
+  const HH = ten(d.getHours());
+  const II = ten(d.getMinutes());
+  return `${YYYY}-${MM}-${DD}T${HH}:${II}`;
+};
+
+const getDefaultSummary = (ctaProgram: string): string => {
+  switch (ctaProgram) {
+    case "parenting":
+      return "Learn exact home-detox protocols to stop electronic screens from cannibalizing prefrontal attention spans, centering core neuro-focus.";
+    case "dmit":
+      return "An interactive live demonstration for parents and students to map Howard Gardner sensory modalities. Take a direct fingerprint baseline test live.";
+    case "midbrain":
+      return "Witness our certified blindfold reading practitioners demonstrate spatial vibration and color awareness, with clinical feedback.";
+    case "value":
+      return "Special active session. Learn de-addiction techniques, parenting skills, value systems, and core brain coordination.";
+    default:
+      return "Special active session. Learn de-addiction techniques, parenting skills, value systems, and core brain coordination.";
+  }
+};
 
 interface AdminPanelProps {
   dynamicEvents: Event[];
@@ -52,6 +103,54 @@ export default function AdminPanel({
   const [adminTab, setAdminTab] = useState<"events" | "cases">("events");
   const [showAddEventForm, setShowAddEventForm] = useState(false);
   const [showAddCaseForm, setShowAddCaseForm] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<number | null>(null);
+  const [editingCaseId, setEditingCaseId] = useState<number | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [lastGeneratedTitle, setLastGeneratedTitle] = useState("");
+  const [deleteConfirmState, setDeleteConfirmState] = useState<{
+    isOpen: boolean;
+    type: "event" | "case";
+    id: number;
+  }>({
+    isOpen: false,
+    type: "event",
+    id: 0,
+  });
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+
+  const generateAISummary = async (titleToUse?: string) => {
+    const title = titleToUse !== undefined ? titleToUse : newEvent.title;
+    if (!title || title.trim().length < 5 || title === lastGeneratedTitle) return;
+
+    setIsGeneratingSummary(true);
+    setLastGeneratedTitle(title);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/generate-summary`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title,
+          type: newEvent.type,
+          ctaProgram: newEvent.ctaProgram,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.summary) {
+        setNewEvent((prev) => ({
+          ...prev,
+          summary: data.summary,
+        }));
+      }
+    } catch (err) {
+      console.error("AI Summary generation network error:", err);
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
 
   // New Event Form State
   const [newEvent, setNewEvent] = useState({
@@ -67,6 +166,7 @@ export default function AdminPanel({
     ctaLabel: "Reserve Ticket",
     ctaProgram: "dmit",
     ctaLocation: "",
+    summary: getDefaultSummary("dmit"),
   });
 
   // New Case Form State
@@ -85,33 +185,82 @@ export default function AdminPanel({
 
   const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEvent.title || !newEvent.dateDisplay) return;
+    if (!newEvent.title || !newEvent.date) return;
 
-    const eventDate = newEvent.date ? new Date(newEvent.date) : new Date();
+    const eventDate = new Date(newEvent.date);
+    const dateDisplay = formatEventDate(newEvent.date);
 
-    const createdEvent: Event = {
-      id: Date.now(),
-      title: newEvent.title,
-      type: newEvent.type,
-      dateDisplay: newEvent.dateDisplay,
-      date: eventDate,
-      meta1Label: newEvent.meta1Label,
-      meta1Value: newEvent.meta1Value,
-      meta2Label: newEvent.meta2Label,
-      meta2Value: newEvent.meta2Value,
-      seatsLabel: newEvent.seatsLabel,
-      ctaLabel: newEvent.ctaLabel,
-      ctaProgram: newEvent.ctaProgram,
-      ctaLocation: newEvent.ctaLocation,
-      typeColor: newEvent.type.includes("Webinar") 
-        ? "bg-indigo-50 text-indigo-700 border-indigo-100" 
-        : "bg-emerald-50 text-emerald-800 border-emerald-100",
-      borderColor: newEvent.type.includes("Webinar") ? "from-indigo-505" : "from-emerald-500",
-      titleHover: newEvent.type.includes("Webinar") ? "group-hover:text-indigo-650" : "group-hover:text-emerald-700",
-    };
+    const typeColor = newEvent.type.includes("Webinar") 
+      ? "bg-indigo-50 text-indigo-700 border-indigo-100" 
+      : newEvent.type.includes("HQ") || newEvent.type.includes("Seminar")
+        ? "bg-amber-100 text-amber-800 border-amber-200"
+        : "bg-emerald-50 text-emerald-800 border-emerald-100";
 
-    setDynamicEvents((prev) => [...prev, createdEvent]);
+    const borderColor = newEvent.type.includes("Webinar") 
+      ? "from-indigo-505" 
+      : newEvent.type.includes("HQ") || newEvent.type.includes("Seminar")
+        ? "from-amber-505"
+        : "from-emerald-500";
+
+    const titleHover = newEvent.type.includes("Webinar") 
+      ? "group-hover:text-indigo-650" 
+      : newEvent.type.includes("HQ") || newEvent.type.includes("Seminar")
+        ? "group-hover:text-amber-700"
+        : "group-hover:text-emerald-700";
+
+    if (editingEventId !== null) {
+      setDynamicEvents((prev) =>
+        prev.map((ev) =>
+          ev.id === editingEventId
+            ? {
+                ...ev,
+                title: newEvent.title,
+                type: newEvent.type,
+                dateDisplay,
+                date: eventDate,
+                meta1Label: newEvent.meta1Label,
+                meta1Value: newEvent.meta1Value,
+                meta2Label: newEvent.meta2Label,
+                meta2Value: newEvent.meta2Value,
+                seatsLabel: newEvent.seatsLabel,
+                ctaLabel: newEvent.ctaLabel,
+                ctaProgram: newEvent.ctaProgram,
+                ctaLocation: newEvent.ctaLocation,
+                typeColor,
+                borderColor,
+                titleHover,
+                summary: newEvent.summary,
+              }
+            : ev
+        )
+      );
+      setEditingEventId(null);
+    } else {
+      const createdEvent: Event = {
+        id: Date.now(),
+        title: newEvent.title,
+        type: newEvent.type,
+        dateDisplay,
+        date: eventDate,
+        meta1Label: newEvent.meta1Label,
+        meta1Value: newEvent.meta1Value,
+        meta2Label: newEvent.meta2Label,
+        meta2Value: newEvent.meta2Value,
+        seatsLabel: newEvent.seatsLabel,
+        ctaLabel: newEvent.ctaLabel,
+        ctaProgram: newEvent.ctaProgram,
+        ctaLocation: newEvent.ctaLocation,
+        typeColor,
+        borderColor,
+        titleHover,
+        summary: newEvent.summary,
+      };
+
+      setDynamicEvents((prev) => [...prev, createdEvent]);
+    }
+
     setShowAddEventForm(false);
+    setLastGeneratedTitle("");
     setNewEvent({
       title: "",
       type: "Zoom Webinar",
@@ -125,6 +274,7 @@ export default function AdminPanel({
       ctaLabel: "Reserve Ticket",
       ctaProgram: "dmit",
       ctaLocation: "",
+      summary: getDefaultSummary("dmit"),
     });
   };
 
@@ -132,21 +282,45 @@ export default function AdminPanel({
     e.preventDefault();
     if (!newCase.headline || !newCase.parentName || !newCase.caseNumber) return;
 
-    const createdCase: CaseFile = {
-      id: Date.now(),
-      caseNumber: newCase.caseNumber,
-      programName: newCase.programName || "General Development",
-      headline: newCase.headline,
-      storyText: newCase.storyText,
-      bullet1: newCase.bullet1,
-      bullet2: newCase.bullet2,
-      bullet3: newCase.bullet3,
-      parentName: newCase.parentName,
-      parentProfession: newCase.parentProfession,
-      childProfile: newCase.childProfile,
-    };
+    if (editingCaseId !== null) {
+      setExtraCaseFiles((prev) =>
+        prev.map((c) =>
+          c.id === editingCaseId
+            ? {
+                ...c,
+                caseNumber: newCase.caseNumber,
+                programName: newCase.programName || "General Development",
+                headline: newCase.headline,
+                storyText: newCase.storyText,
+                bullet1: newCase.bullet1,
+                bullet2: newCase.bullet2,
+                bullet3: newCase.bullet3,
+                parentName: newCase.parentName,
+                parentProfession: newCase.parentProfession,
+                childProfile: newCase.childProfile,
+              }
+            : c
+        )
+      );
+      setEditingCaseId(null);
+    } else {
+      const createdCase: CaseFile = {
+        id: Date.now(),
+        caseNumber: newCase.caseNumber,
+        programName: newCase.programName || "General Development",
+        headline: newCase.headline,
+        storyText: newCase.storyText,
+        bullet1: newCase.bullet1,
+        bullet2: newCase.bullet2,
+        bullet3: newCase.bullet3,
+        parentName: newCase.parentName,
+        parentProfession: newCase.parentProfession,
+        childProfile: newCase.childProfile,
+      };
 
-    setExtraCaseFiles((prev) => [...prev, createdCase]);
+      setExtraCaseFiles((prev) => [...prev, createdCase]);
+    }
+
     setShowAddCaseForm(false);
     setNewCase({
       caseNumber: "",
@@ -160,6 +334,46 @@ export default function AdminPanel({
       parentProfession: "",
       childProfile: "",
     });
+  };
+
+  const handleEditEvent = (ev: Event) => {
+    setEditingEventId(ev.id);
+    setLastGeneratedTitle(ev.title || "");
+    const dateVal = ev.date ? (ev.date instanceof Date ? ev.date : new Date(ev.date)) : null;
+    const dateString = dateVal && !isNaN(dateVal.getTime()) ? toDatetimeLocalString(dateVal) : "";
+    setNewEvent({
+      title: ev.title,
+      type: ev.type,
+      dateDisplay: ev.dateDisplay,
+      date: dateString,
+      meta1Label: ev.meta1Label || "",
+      meta1Value: ev.meta1Value || "",
+      meta2Label: ev.meta2Label || "",
+      meta2Value: ev.meta2Value || "",
+      seatsLabel: ev.seatsLabel || "Seats Available",
+      ctaLabel: ev.ctaLabel || "Reserve Ticket",
+      ctaProgram: ev.ctaProgram || "dmit",
+      ctaLocation: ev.ctaLocation || "",
+      summary: ev.summary || "",
+    });
+    setShowAddEventForm(true);
+  };
+
+  const handleEditCase = (c: CaseFile) => {
+    setEditingCaseId(c.id);
+    setNewCase({
+      caseNumber: c.caseNumber,
+      programName: c.programName,
+      headline: c.headline,
+      storyText: c.storyText,
+      bullet1: c.bullet1,
+      bullet2: c.bullet2,
+      bullet3: c.bullet3,
+      parentName: c.parentName,
+      parentProfession: c.parentProfession,
+      childProfile: c.childProfile,
+    });
+    setShowAddCaseForm(true);
   };
 
   const handleDeleteEvent = (id: number) => {
@@ -234,8 +448,49 @@ export default function AdminPanel({
             </h3>
             <button
               type="button"
-              onClick={() => setShowAddEventForm(!showAddEventForm)}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-755 hover:bg-indigo-700 text-white font-mono font-bold text-xs uppercase rounded-xl flex items-center gap-1.5 cursor-pointer shadow hover:shadow-lg transition-all"
+              onClick={() => {
+                if (showAddEventForm && editingEventId !== null) {
+                  setEditingEventId(null);
+                  setLastGeneratedTitle("");
+                  setNewEvent({
+                    title: "",
+                    type: "Zoom Webinar",
+                    dateDisplay: "",
+                    date: "",
+                    meta1Label: "",
+                    meta1Value: "",
+                    meta2Label: "",
+                    meta2Value: "",
+                    seatsLabel: "Seats Available",
+                    ctaLabel: "Reserve Ticket",
+                    ctaProgram: "dmit",
+                    ctaLocation: "",
+                    summary: getDefaultSummary("dmit"),
+                  });
+                } else {
+                  setShowAddEventForm(!showAddEventForm);
+                  if (!showAddEventForm) {
+                    setEditingEventId(null);
+                    setLastGeneratedTitle("");
+                    setNewEvent({
+                      title: "",
+                      type: "Zoom Webinar",
+                      dateDisplay: "",
+                      date: "",
+                      meta1Label: "",
+                      meta1Value: "",
+                      meta2Label: "",
+                      meta2Value: "",
+                      seatsLabel: "Seats Available",
+                      ctaLabel: "Reserve Ticket",
+                      ctaProgram: "dmit",
+                      ctaLocation: "",
+                      summary: getDefaultSummary("dmit"),
+                    });
+                  }
+                }
+              }}
+              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-mono font-bold text-xs uppercase rounded-xl flex items-center gap-1.5 cursor-pointer shadow hover:shadow-lg transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Add Seminar Event</span>
@@ -248,7 +503,7 @@ export default function AdminPanel({
               className="p-6 bg-indigo-50/50 border border-indigo-100 rounded-3xl space-y-6 animate-fadeIn"
             >
               <h4 className="text-sm font-black text-indigo-950 uppercase tracking-wide">
-                Publish New Event details
+                {editingEventId ? "Edit Event details" : "Publish New Event details"}
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <div className="space-y-1.5">
@@ -261,6 +516,11 @@ export default function AdminPanel({
                     placeholder="e.g. Brain Activation Workshop"
                     value={newEvent.title}
                     onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                    onBlur={(e) => {
+                      if (e.target.value && e.target.value.trim().length >= 5) {
+                        generateAISummary(e.target.value);
+                      }
+                    }}
                     className="w-full bg-white border border-indigo-150 border-indigo-200 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
@@ -282,27 +542,14 @@ export default function AdminPanel({
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-mono uppercase text-indigo-700 font-bold">
-                    Date & Time Display *
+                    Event Date & Time *
                   </label>
                   <input
-                    type="text"
+                    type="datetime-local"
                     required
-                    placeholder="e.g. June 15, 11:00 AM IST"
-                    value={newEvent.dateDisplay}
-                    onChange={(e) => setNewEvent({ ...newEvent, dateDisplay: e.target.value })}
-                    className="w-full bg-white border border-indigo-200 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono uppercase text-indigo-700 font-bold">
-                    ISO Date (For expiry sorting)
-                  </label>
-                  <input
-                    type="date"
                     value={newEvent.date}
                     onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                    className="w-full bg-white border border-indigo-200 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-white border border-indigo-200 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-indigo-500 cursor-pointer"
                   />
                 </div>
 
@@ -390,7 +637,18 @@ export default function AdminPanel({
                   </label>
                   <select
                     value={newEvent.ctaProgram}
-                    onChange={(e) => setNewEvent({ ...newEvent, ctaProgram: e.target.value })}
+                    onChange={(e) => {
+                      const newProgram = e.target.value;
+                      setNewEvent((prev) => {
+                        const isDefault = !prev.summary || 
+                          prev.summary === getDefaultSummary(prev.ctaProgram);
+                        return {
+                          ...prev,
+                          ctaProgram: newProgram,
+                          summary: isDefault ? getDefaultSummary(newProgram) : prev.summary
+                        };
+                      });
+                    }}
                     className="w-full bg-white border border-indigo-200 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-indigo-500 cursor-pointer"
                   >
                     <option value="dmit">DMIT Mapping</option>
@@ -412,17 +670,71 @@ export default function AdminPanel({
                     className="w-full bg-white border border-indigo-200 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
+
+                <div className="space-y-1.5 md:col-span-3">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] font-mono uppercase text-indigo-700 font-bold">
+                      Custom Summary (Optional)
+                    </label>
+                    {newEvent.title && newEvent.title.trim().length >= 5 && (
+                      <button
+                        type="button"
+                        onClick={() => generateAISummary(newEvent.title)}
+                        disabled={isGeneratingSummary}
+                        className="text-[10px] font-mono text-indigo-650 hover:text-indigo-800 font-bold flex items-center gap-1 cursor-pointer transition-all hover:scale-[1.01] disabled:opacity-50"
+                      >
+                        {isGeneratingSummary ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>AI Generating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                            <span>Regenerate Summary</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Learn exact de-escalation protocols for screen dependency..."
+                    value={newEvent.summary}
+                    onChange={(e) => setNewEvent({ ...newEvent, summary: e.target.value })}
+                    className="w-full bg-white border border-indigo-200 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-indigo-500 cursor-text animate-fadeIn"
+                  />
+                </div>
               </div>
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="px-5 py-3 bg-indigo-650 bg-indigo-600 text-white font-mono font-bold text-xs uppercase rounded-xl hover:bg-indigo-755 cursor-pointer shadow hover:shadow-md transition-all"
+                  className="px-5 py-3 bg-indigo-600 text-white font-mono font-bold text-xs uppercase rounded-xl hover:bg-indigo-700 cursor-pointer shadow hover:shadow-md transition-all"
                 >
-                  Save Event
+                  {editingEventId ? "Update Event" : "Save Event"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowAddEventForm(false)}
+                  onClick={() => {
+                    setShowAddEventForm(false);
+                    setEditingEventId(null);
+                    setLastGeneratedTitle("");
+                    setNewEvent({
+                      title: "",
+                      type: "Zoom Webinar",
+                      dateDisplay: "",
+                      date: "",
+                      meta1Label: "",
+                      meta1Value: "",
+                      meta2Label: "",
+                      meta2Value: "",
+                      seatsLabel: "Seats Available",
+                      ctaLabel: "Reserve Ticket",
+                      ctaProgram: "dmit",
+                      ctaLocation: "",
+                      summary: getDefaultSummary("dmit"),
+                    });
+                  }}
                   className="px-5 py-3 bg-white border border-slate-200 text-slate-600 font-mono font-bold text-xs uppercase rounded-xl hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
@@ -442,14 +754,24 @@ export default function AdminPanel({
                     <span className="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded border bg-indigo-50 text-indigo-700 border-indigo-100">
                       {ev.type}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteEvent(ev.id)}
-                      className="p-1 text-slate-350 hover:text-rose-600 transition-colors cursor-pointer"
-                      title="Delete Event"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex gap-1.5 items-center">
+                      <button
+                        type="button"
+                        onClick={() => handleEditEvent(ev)}
+                        className="p-1 text-slate-350 hover:text-indigo-600 transition-colors cursor-pointer"
+                        title="Edit Event"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteConfirmState({ isOpen: true, type: "event", id: ev.id })}
+                        className="p-1 text-slate-350 hover:text-rose-600 transition-colors cursor-pointer"
+                        title="Delete Event"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                   <h4 className="text-sm font-bold text-slate-900 leading-tight">
                     {ev.title}
@@ -457,6 +779,11 @@ export default function AdminPanel({
                   <p className="text-[10px] font-mono text-slate-500 flex items-center gap-1">
                     <span>📅</span> {ev.dateDisplay}
                   </p>
+                  {ev.summary && (
+                    <p className="text-[11px] font-sans text-slate-600 leading-relaxed italic border-l-2 border-indigo-100 pl-2">
+                      "{ev.summary}"
+                    </p>
+                  )}
                   
                   {ev.meta1Label && (
                     <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-1 text-[10px] font-mono text-slate-605">
@@ -492,7 +819,40 @@ export default function AdminPanel({
             </h3>
             <button
               type="button"
-              onClick={() => setShowAddCaseForm(!showAddCaseForm)}
+              onClick={() => {
+                if (showAddCaseForm && editingCaseId !== null) {
+                  setEditingCaseId(null);
+                  setNewCase({
+                    caseNumber: "",
+                    programName: "",
+                    headline: "",
+                    storyText: "",
+                    bullet1: "",
+                    bullet2: "",
+                    bullet3: "",
+                    parentName: "",
+                    parentProfession: "",
+                    childProfile: "",
+                  });
+                } else {
+                  setShowAddCaseForm(!showAddCaseForm);
+                  if (!showAddCaseForm) {
+                    setEditingCaseId(null);
+                    setNewCase({
+                      caseNumber: "",
+                      programName: "",
+                      headline: "",
+                      storyText: "",
+                      bullet1: "",
+                      bullet2: "",
+                      bullet3: "",
+                      parentName: "",
+                      parentProfession: "",
+                      childProfile: "",
+                    });
+                  }
+                }
+              }}
               className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-mono font-bold text-xs uppercase rounded-xl flex items-center gap-1.5 cursor-pointer shadow hover:shadow-lg transition-all"
             >
               <Plus className="w-4 h-4" />
@@ -506,7 +866,7 @@ export default function AdminPanel({
               className="p-6 bg-indigo-50/50 border border-indigo-100 rounded-3xl space-y-6 animate-fadeIn"
             >
               <h4 className="text-sm font-black text-indigo-950 uppercase tracking-wide">
-                Publish New Case Dossier
+                {editingCaseId ? "Edit Case Dossier" : "Publish New Case Dossier"}
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
                 <div className="space-y-1.5">
@@ -649,11 +1009,26 @@ export default function AdminPanel({
                   type="submit"
                   className="px-5 py-3 bg-indigo-600 text-white font-mono font-bold text-xs uppercase rounded-xl hover:bg-indigo-700 cursor-pointer shadow hover:shadow-md transition-all"
                 >
-                  Save Case File
+                  {editingCaseId ? "Update Case File" : "Save Case File"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowAddCaseForm(false)}
+                  onClick={() => {
+                    setShowAddCaseForm(false);
+                    setEditingCaseId(null);
+                    setNewCase({
+                      caseNumber: "",
+                      programName: "",
+                      headline: "",
+                      storyText: "",
+                      bullet1: "",
+                      bullet2: "",
+                      bullet3: "",
+                      parentName: "",
+                      parentProfession: "",
+                      childProfile: "",
+                    });
+                  }}
                   className="px-5 py-3 bg-white border border-slate-200 text-slate-600 font-mono font-bold text-xs uppercase rounded-xl hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
@@ -692,16 +1067,68 @@ export default function AdminPanel({
                     Patient: {c.childProfile} | Parents: {c.parentName} ({c.parentProfession})
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteCase(c.id)}
-                  className="px-3 py-2 bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 font-mono font-bold text-[10px] uppercase rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shrink-0 hover:scale-[1.01]"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Delete File</span>
-                </button>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleEditCase(c)}
+                    className="px-3 py-2 bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 font-mono font-bold text-[10px] uppercase rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shrink-0 hover:scale-[1.01]"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>Edit File</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirmState({ isOpen: true, type: "case", id: c.id })}
+                    className="px-3 py-2 bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 font-mono font-bold text-[10px] uppercase rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shrink-0 hover:scale-[1.01]"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete File</span>
+                  </button>
+                </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmState.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full mx-4 shadow-2xl space-y-6">
+            <div className="space-y-2 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-display font-black text-slate-950">
+                Confirm Deletion
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed font-sans font-medium">
+                Are you sure you want to delete this summary? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmState({ isOpen: false, type: "event", id: 0 })}
+                className="flex-1 py-3 bg-white border border-slate-200 text-slate-600 font-mono font-bold text-xs uppercase rounded-xl hover:bg-slate-50 cursor-pointer text-center transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (deleteConfirmState.type === "event") {
+                    handleDeleteEvent(deleteConfirmState.id);
+                  } else {
+                    handleDeleteCase(deleteConfirmState.id);
+                  }
+                  setDeleteConfirmState({ isOpen: false, type: "event", id: 0 });
+                }}
+                className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-mono font-bold text-xs uppercase rounded-xl cursor-pointer text-center shadow shadow-rose-600/10 hover:shadow-rose-600/20 transition-all animate-pulse-slow"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

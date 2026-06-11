@@ -1155,7 +1155,7 @@ export default function App() {
                         </div>
                         <h4 className={`text-lg font-bold text-slate-800 ${ev.titleHover || "group-hover:text-indigo-600"} transition-colors`}>{ev.title}</h4>
                         <p className="text-xs text-slate-600 leading-relaxed">
-                          {ev.id === 1 ? "Learn exact home-detox protocols to stop electronic screens from cannibalizing prefrontal attention spans, centering core neuro-focus." : ev.id === 2 ? "An interactive live demonstration for parents and students to map Howard Gardner sensory modalities. Take a direct fingerprint baseline test live." : ev.id === 3 ? "Witness our certified blindfold reading practitioners demonstrate spatial vibration and color awareness, with clinical feedback." : "Special active session. Learn de-addiction techniques, parenting skills, value systems, and core brain coordination."}
+                          {ev.summary || (ev.id === 1 ? "Learn exact home-detox protocols to stop electronic screens from cannibalizing prefrontal attention spans, centering core neuro-focus." : ev.id === 2 ? "An interactive live demonstration for parents and students to map Howard Gardner sensory modalities. Take a direct fingerprint baseline test live." : ev.id === 3 ? "Witness our certified blindfold reading practitioners demonstrate spatial vibration and color awareness, with clinical feedback." : "Special active session. Learn de-addiction techniques, parenting skills, value systems, and core brain coordination.")}
                         </p>
                         
                         {(ev.meta1Label || ev.meta2Label) && (
