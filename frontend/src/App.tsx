@@ -346,7 +346,7 @@ export default function App() {
     }, 1100);
   };
 
-  const ADMIN_SECURE_PATH = import.meta.env.VITE_ADMIN_SECURE_PATH || "/admin-secure-portal-3957";
+  const ADMIN_SECURE_PATH = import.meta.env.VITE_ADMIN_SECURE_PATH || "/admin";
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
   // Ref to guard against pushState re-triggering effects
