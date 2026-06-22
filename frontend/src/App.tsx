@@ -33,11 +33,15 @@ import {
   Plus,
   Image as ImageIcon,
   Linkedin,
-  Youtube
+  Youtube,
+  Menu,
+  X
 } from "lucide-react";
 import { PROGRAMS, TESTIMONIALS, SEO_POSTS, BRAND_ASSETS, STATISTICS } from "./data";
 // @ts-ignore
 import logoImage from "./assets/images/brainx_logo_1780642057674.jpg";
+// @ts-ignore
+import brenixImg from "./assets/images/brenix.png";
 import AetheriaAssistant from "./components/AetheriaAssistant";
 import CinematicBackground from "./components/CinematicBackground";
 import BrainHologram from "./components/BrainHologram";
@@ -172,14 +176,98 @@ const EVENTS = [
   }
 ];
 
+const OriginalLinkedinIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#0a66c2">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+  </svg>
+);
+
+const OriginalYoutubeIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#ff0000">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+const AnimatedCounter = ({ endValue }: { endValue: string }) => {
+  const numericPart = parseInt(endValue.replace(/[^0-9]/g, ''), 10);
+  const suffix = endValue.replace(/[0-9,]/g, '');
+  
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          let startTimestamp: number;
+          const duration = 2000;
+          const step = (timestamp: number) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            setCount(Math.floor(easeOut * numericPart));
+            if (progress < 1) {
+              window.requestAnimationFrame(step);
+            } else {
+              setCount(numericPart);
+            }
+          };
+          window.requestAnimationFrame(step);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [numericPart]);
+
+  return <span ref={ref}>{count === 0 ? "0" : count.toLocaleString('en-IN')}{suffix}</span>;
+};
+
 export default function App() {
   // Pre-loading boot sequence states
-  const [systemBooting, setSystemBooting] = useState<boolean>(true);
+  const [systemBooting, setSystemBooting] = useState<boolean>(false);
   const [bootProgress, setBootProgress] = useState<number>(0);
   const [bootStage, setBootStage] = useState<string>("SYSTEM BOOTING...");
 
   // Navigation: Multi-page router state
   const [currentPage, setCurrentPage] = useState<"home" | "about" | "programs" | "partners" | "stories" | "resources" | "gallery" | "contact" | "admin">("home");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+
+  // Sync URL hash with component state
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      const validPages = ["home", "about", "programs", "partners", "stories", "resources", "gallery", "contact", "admin"];
+      if (validPages.includes(hash)) {
+        setCurrentPage(hash as any);
+      } else if (!hash || hash === "/") {
+        setCurrentPage("home");
+      }
+    };
+
+    // On first load, always default to home and clear any lingering URL hash
+    if (window.location.hash !== "#home") {
+      window.history.replaceState(null, "", "/#home");
+    }
+    setCurrentPage("home");
+    
+    // Force scroll to top on reload, disabling browser scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    setTimeout(() => window.scrollTo(0, 0), 0);
+
+
+    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener("popstate", handleHashChange);
+    
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+      window.removeEventListener("popstate", handleHashChange);
+    };
+  }, []);
 
   // Admin and Dynamic Content States
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
@@ -489,7 +577,9 @@ export default function App() {
   // Quick helper to scroll to top after tab transition
   const handlePageChange = (page: "home" | "about" | "programs" | "partners" | "stories" | "resources" | "gallery" | "contact" | "admin") => {
     setCurrentPage(page);
+    setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    window.history.pushState(null, "", `/#${page}`);
   };
 
   return (
@@ -546,24 +636,24 @@ export default function App() {
         </div>
 
         {/* TOP PREMIUM NAVIGATION BRAND HEADER */}
-        <nav id="global-header-nav" className="sticky top-0 z-[999] bg-white/95 backdrop-blur-md border-b border-slate-200 py-4 transition-all duration-300 shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+        <nav id="global-header-nav" className="sticky top-0 z-[999] bg-white/95 backdrop-blur-md border-b border-slate-200 py-2.5 transition-all duration-300 shadow-sm">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-12 flex items-center justify-between gap-1">
             
             {/* Organisation Brand Logo Area */}
             <button 
               type="button"
               onClick={() => handlePageChange("home")}
-              className="flex items-center gap-3 text-left focus:outline-none cursor-pointer group"
+              className="flex items-center gap-2 sm:gap-3 text-left focus:outline-none cursor-pointer group shrink-0"
             >
-              <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 p-0 overflow-hidden group-hover:border-indigo-550 transition-all duration-300 shadow-sm">
-                <BrainXLogo className="w-12 h-12" active />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 p-0 overflow-hidden group-hover:border-indigo-550 transition-all duration-300 shadow-sm shrink-0">
+                <BrainXLogo className="w-10 h-10 sm:w-12 sm:h-12" active />
               </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xl font-display font-bold tracking-tight uppercase text-slate-800">Brain<span className="text-indigo-600 font-extrabold">X</span></span>
-                  <span className="text-[10px] font-mono tracking-widest bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded uppercase font-bold">India</span>
+              <div className="shrink-0 flex flex-col justify-center">
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  <span className="text-lg sm:text-xl font-display font-bold tracking-tight uppercase text-slate-800">Brain<span className="text-indigo-600 font-extrabold">X</span></span>
+                  <span className="text-[8px] sm:text-[10px] font-mono tracking-widest bg-indigo-100 text-indigo-700 px-1 sm:px-1.5 py-0.5 rounded uppercase font-bold">India</span>
                 </div>
-                <span className="block text-[8px] tracking-widest font-sans text-indigo-600 uppercase font-bold">UNWIND THE GENIUS</span>
+                <span className="hidden sm:block text-[8px] tracking-widest font-sans text-indigo-600 uppercase font-bold">UNWIND THE GENIUS</span>
               </div>
             </button>
 
@@ -619,42 +709,90 @@ export default function App() {
                 Gallery
               </button>
               {isAdminLoggedIn && (
-                <button type="button" onClick={() => handlePageChange("admin" as any)} className={`py-1 hover:text-rose-600 transition-all cursor-pointer text-rose-500 font-bold ${currentPage === "admin" ? "border-b-2 border-rose-500" : ""}`}>
+                <button type="button" onClick={() => handlePageChange("admin" as any)} className="py-1 hover:text-rose-600 transition-all cursor-pointer text-rose-500 font-bold">
                   Admin
                 </button>
               )}
             </div>
 
             {/* Quick Consultation Booking Call & Social Media Links */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1 sm:gap-3 shrink-0">
               <a 
                 href="https://www.linkedin.com/in/sanju-nair-s-brainx-b292b4b9?utm_content=profile&utm_medium=member_android&utm_source=chatgpt.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 text-slate-500 hover:text-[#0a66c2] hover:bg-slate-100 rounded-lg transition-all duration-350 hover:scale-105 flex items-center justify-center cursor-pointer"
+                className="flex p-1 sm:p-1.5 hover:bg-slate-100 rounded-lg transition-all duration-350 hover:scale-105 items-center justify-center cursor-pointer"
                 title="LinkedIn Profile"
               >
-                <Linkedin className="w-4 h-4" />
+                <OriginalLinkedinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
               <a 
                 href="http://www.youtube.com/@brainxmasters4159?utm_source=chatgpt.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 text-slate-500 hover:text-[#ff0000] hover:bg-slate-100 rounded-lg transition-all duration-350 hover:scale-105 flex items-center justify-center cursor-pointer"
+                className="flex p-1 sm:p-1.5 hover:bg-slate-100 rounded-lg transition-all duration-350 hover:scale-105 items-center justify-center cursor-pointer"
                 title="BrainX Masters YouTube Channel"
               >
-                <Youtube className="w-4 h-4" />
+                <OriginalYoutubeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
 
               <button 
                 type="button"
                 onClick={() => handlePageChange("contact")}
-                className="px-4 py-2.5 sm:px-5 bg-indigo-600 hover:bg-indigo-550 text-white rounded-lg text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5 hover:scale-[1.01]"
+                className="px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-indigo-600 hover:bg-indigo-550 text-white rounded-lg text-[10px] sm:text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1 sm:gap-1.5 hover:scale-[1.01]"
               >
-                <Users className="w-3.5 h-3.5" />
+                <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span className="hidden sm:inline">Diagnostic Audits</span>
                 <span className="sm:hidden">Audits</span>
               </button>
+              
+              {/* Mobile Menu Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-1.5 sm:p-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation Dropdown */}
+          <div 
+            className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200 ${isMobileMenuOpen ? "max-h-[600px] opacity-100 visible" : "max-h-0 opacity-0 invisible"}`}
+          >
+            <div className="px-6 py-4 flex flex-col gap-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-600">
+              <button type="button" onClick={() => handlePageChange("home")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "home" ? "text-indigo-600" : ""}`}>Home</button>
+              <button type="button" onClick={() => handlePageChange("about")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "about" ? "text-indigo-600" : ""}`}>Origins</button>
+              <button type="button" onClick={() => handlePageChange("programs")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "programs" ? "text-indigo-600" : ""}`}>Academies</button>
+              <button type="button" onClick={() => handlePageChange("partners")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "partners" ? "text-indigo-600" : ""}`}>Partnerships</button>
+              <button type="button" onClick={() => handlePageChange("stories")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "stories" ? "text-indigo-600" : ""}`}>Impact</button>
+              <button type="button" onClick={() => handlePageChange("resources")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "resources" ? "text-indigo-600" : ""}`}>Resources & Q&A</button>
+              <button type="button" onClick={() => handlePageChange("gallery")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "gallery" ? "text-indigo-600" : ""}`}>Gallery</button>
+              <button type="button" onClick={() => handlePageChange("contact")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "contact" ? "text-indigo-600" : ""}`}>Contact</button>
+              {isAdminLoggedIn && (
+                <button type="button" onClick={() => handlePageChange("admin" as any)} className="text-left text-rose-500 hover:text-rose-600 transition-colors">Admin</button>
+              )}
+              
+              <div className="flex gap-4 pt-4 border-t border-slate-200">
+                <a 
+                  href="https://www.linkedin.com/in/sanju-nair-s-brainx-b292b4b9?utm_content=profile&utm_medium=member_android&utm_source=chatgpt.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-slate-700 hover:text-[#0a66c2]"
+                >
+                  <OriginalLinkedinIcon className="w-5 h-5" /> LinkedIn
+                </a>
+                <a 
+                  href="http://www.youtube.com/@brainxmasters4159?utm_source=chatgpt.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-slate-700 hover:text-[#ff0000]"
+                >
+                  <OriginalYoutubeIcon className="w-5 h-5" /> YouTube
+                </a>
+              </div>
             </div>
           </div>
         </nav>
@@ -662,15 +800,15 @@ export default function App() {
       )}
 
       {/* RENDER PAGES CONDITIONALLY */}
-      <main id="main-content-zone" className={`relative z-30 ${currentPage === "admin" ? "pt-0" : "pt-[140px]"}`}>
+      <main id="main-content-zone" className={`relative z-30 ${currentPage === "admin" ? "pt-0" : "pt-[120px]"}`}>
         
         {/* PAGE 1: HOME PAGE */}
         {currentPage === "home" && (
           <div className="animate-fadeIn">
                        {/* HERO - PREMIUM SCIENTIFIC & EMOTIONAL ADVENTURE */}
-            <header className="max-w-7xl mx-auto px-6 md:px-12 pt-4 pb-16 md:pt-14 md:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative">
-              
-              {/* Ambient dynamic radial backdrop layout */}
+            <header className="max-w-7xl mx-auto px-6 md:px-12 pt-6 pb-16 md:pt-8 md:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start relative">
+               
+               {/* Ambient dynamic radial backdrop layout */}
               <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-gradient-to-tr from-indigo-500/8 to-indigo-500/4 blur-[130px] pointer-events-none -z-10"></div>
               
               <div className="lg:col-span-6 space-y-6 text-left relative z-10">
@@ -741,34 +879,19 @@ export default function App() {
               {/* HERO RIGHT: CINEMATIC IMAGERY LAYERED WITH CALCULATOR */}
               <div className="lg:col-span-6 space-y-6 relative z-10 col-span-1">
                 
-                {/* 1. Holographic Child Learning & Brain Scanner Visualization */}
-                <div className="p-6 rounded-3xl bg-white/75 backdrop-blur-md border border-slate-200/85 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden flex flex-col items-center">
+                {/* 1. Cinematic Hero Photography */}
+                <div className="w-full relative rounded-3xl overflow-hidden border border-slate-200/85 shadow-2xl hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-500 group">
+                  <img src="/images/hero_image_1781776606478.png" alt="Confident Child with Neuro-Headset" className="w-full aspect-[4/3] md:aspect-[4/3.5] object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out" />
                   
                   {/* Tech overlay scanner tags */}
-                  <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-indigo-50 border border-indigo-100/60 text-[9px] text-indigo-700 font-mono font-bold px-2.5 py-1 rounded-full uppercase tracking-wider animate-pulse">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
-                    <span>Biometric SCANNER INTERACTION</span>
+                  <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-indigo-900/80 backdrop-blur-md border border-indigo-500/30 text-[9px] text-indigo-100 font-mono font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Sensory Integration Active</span>
                   </div>
 
-                  <div className="absolute top-4 right-4 flex items-center gap-1 bg-amber-50 border border-amber-100 text-[8px] text-amber-700 font-mono font-bold px-2 py-0.5 rounded uppercase font-bold">
-                    <span>Node Active</span>
-                  </div>
-
-                  {/* Centered Hologram Screen */}
-                  <div className="w-full flex flex-col items-center justify-center pt-8 pb-4 relative">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] bg-indigo-400/5 rounded-full blur-3xl pointer-events-none"></div>
-                    <div className="w-[280px] h-[260px] flex items-center justify-center relative">
-                      <BrainHologram className="w-full h-full" />
-                      
-                      {/* Circular radar sweep decoration */}
-                      <div className="absolute w-[200px] h-[200px] border border-dashed border-indigo-500/10 rounded-full animate-spin pointer-events-none" style={{ animationDuration: "35s" }}></div>
-                    </div>
-                  </div>
-
-                  {/* Scan diagnostics status line */}
-                  <div className="w-full text-center border-t border-slate-100 pt-3 flex justify-between items-center text-[10px] font-mono text-slate-500 uppercase tracking-widest font-semibold">
-                    <span>FRONTLOBE RESOLUTION: OPTIMAL</span>
-                    <span className="text-emerald-600 font-bold">&bull; COMPLIANT SECURED</span>
+                  <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-white/90 backdrop-blur-md border border-slate-200 text-[9px] text-slate-800 font-mono font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                    <Brain className="w-3 h-3 text-indigo-600" />
+                    <span>Alpha State: 12Hz</span>
                   </div>
                 </div>
 
@@ -882,36 +1005,31 @@ export default function App() {
              {/* ACHIEVEMENTS NUMERICS - DENSE HIGH-TRUST BOARD */}
              <section className="bg-slate-50/80 border-y border-slate-200/60 backdrop-blur-sm shadow-sm">
                <div className="max-w-7xl mx-auto px-6 md:px-12 py-12">
-                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 text-center [&>div:first-child]:hidden">
-                   
-                   <div className="space-y-1">
-                     
-                     
+                 <div className="flex flex-wrap justify-center items-start gap-8 sm:gap-12 lg:gap-16 text-center">
+ 
+                   <div className="w-[140px] md:w-[160px] space-y-1.5 group">
+                     <div className="text-3xl md:text-4xl font-display font-black text-slate-800 group-hover:text-indigo-600 transition-colors duration-300 cursor-default"><AnimatedCounter endValue={STATISTICS.schoolsCollaborations} /></div>
+                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold leading-relaxed group-hover:text-indigo-400 transition-colors duration-300">{STATISTICS.schoolLabel}</p>
                    </div>
  
-                   <div className="space-y-1">
-                     <div className="text-3xl font-display font-black text-indigo-600">{STATISTICS.schoolsCollaborations}</div>
-                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold">{STATISTICS.schoolLabel}</p>
+                   <div className="w-[140px] md:w-[160px] space-y-1.5 group">
+                     <div className="text-3xl md:text-4xl font-display font-black text-slate-800 group-hover:text-indigo-600 transition-colors duration-300 cursor-default"><AnimatedCounter endValue={STATISTICS.dmitTests} /></div>
+                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold leading-relaxed group-hover:text-indigo-400 transition-colors duration-300">{STATISTICS.dmitTestsLabel}</p>
                    </div>
  
-                   <div className="space-y-1">
-                     <div className="text-3xl font-display font-black text-indigo-600">{STATISTICS.dmitTests}</div>
-                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold">{STATISTICS.dmitTestsLabel}</p>
+                   <div className="w-[140px] md:w-[160px] space-y-1.5 group">
+                     <div className="text-3xl md:text-4xl font-display font-black text-slate-800 group-hover:text-indigo-600 transition-colors duration-300 cursor-default"><AnimatedCounter endValue={STATISTICS.studentsTrained} /></div>
+                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold leading-relaxed group-hover:text-indigo-400 transition-colors duration-300">{STATISTICS.studentsLabel}</p>
                    </div>
  
-                   <div className="space-y-1">
-                     <div className="text-3xl font-display font-black text-indigo-600">{STATISTICS.studentsTrained}</div>
-                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold">{STATISTICS.studentsLabel}</p>
+                   <div className="w-[140px] md:w-[160px] space-y-1.5 group">
+                     <div className="text-3xl md:text-4xl font-display font-black text-slate-800 group-hover:text-indigo-600 transition-colors duration-300 cursor-default"><AnimatedCounter endValue={STATISTICS.teachersEmpowered} /></div>
+                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold leading-relaxed group-hover:text-indigo-400 transition-colors duration-300">{STATISTICS.teachersLabel}</p>
                    </div>
  
-                   <div className="col-span-2 sm:col-span-1 space-y-1">
-                     <div className="text-3xl font-display font-black text-amber-655">{STATISTICS.teachersEmpowered}</div>
-                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold">{STATISTICS.teachersLabel}</p>
-                   </div>
- 
-                   <div className="col-span-2 sm:col-span-1 space-y-1">
-                     <div className="text-3xl font-display font-black text-amber-655">{STATISTICS.parentsGuided}</div>
-                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold">{STATISTICS.parentsLabel}</p>
+                   <div className="w-[140px] md:w-[160px] space-y-1.5 group">
+                     <div className="text-3xl md:text-4xl font-display font-black text-slate-800 group-hover:text-indigo-600 transition-colors duration-300 cursor-default"><AnimatedCounter endValue={STATISTICS.parentsGuided} /></div>
+                     <p className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-semibold leading-relaxed group-hover:text-indigo-400 transition-colors duration-300">{STATISTICS.parentsLabel}</p>
                    </div>
  
                  </div>
@@ -926,6 +1044,11 @@ export default function App() {
                 <p className="text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto">
                   Why traditional repetitive tuitions prepare children for immediate career obsolescence, and how the BrainX biometric framework secures cognitive sovereignty.
                 </p>
+              </div>
+
+              {/* Cinematic Side-by-Side Art Graphic */}
+              <div className="mb-12 max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-indigo-900/10 border border-slate-200/80">
+                <img src={brenixImg} alt="Human Intelligence vs Artificial Intelligence" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-1000" />
               </div>
 
               {/* Spectacular Interactive Graphical Dashboard */}
@@ -970,6 +1093,7 @@ export default function App() {
                 </div>
               </div>
             </section>
+
 
             {/* DEDICATED CONCERNS SECTION - EMOTIONAL ANCHORS & RESTORATIONAL IMAGERY */}
             <section className="bg-slate-50/90 py-24 border-y border-slate-200/60 backdrop-blur-sm relative">
@@ -1083,7 +1207,7 @@ export default function App() {
                         <div className="relative h-40 overflow-hidden shrink-0">
                           <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10"></div>
                           <img 
-                            src={pImages[idx] || pImages[0]} 
+                            src={p.bannerImage || pImages[idx] || pImages[0]} 
                             alt={p.title} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             referrerPolicy="no-referrer"
@@ -1209,8 +1333,15 @@ export default function App() {
 
               <AetheriaAssistant />
             </section>            {/* SEAT BOOKING & COMPLIMENTARY VOUCHERS REGISTRATION */}
-            <section className="bg-slate-50/70 py-20 border-y border-slate-200/80 backdrop-blur-sm">
-              <div className="max-w-4xl mx-auto px-6 text-center space-y-8">
+            <section 
+              className="bg-slate-50 py-20 border-y border-slate-200/80 relative"
+              style={{
+                backgroundImage: "radial-gradient(#cbd5e1 1.5px, transparent 1.5px)",
+                backgroundSize: "24px 24px",
+                backgroundPosition: "0 0"
+              }}
+            >
+              <div className="max-w-4xl mx-auto px-6 text-center space-y-8 relative z-10">
                 <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">&bull; Secure Intake Screening</span>
                 <h2 className="text-3xl md:text-5xl font-display font-black text-slate-900">Secure a Free Parent Counseling Slot</h2>
                 <div className="flex justify-center">
@@ -1947,6 +2078,66 @@ export default function App() {
               </p>
             </div>
 
+            {/* THE TRANSFORMATION JOURNEY - TIMELINE */}
+            <div className="py-8">
+              <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                 <span className="text-xs font-mono uppercase tracking-widest text-[#d97706] font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-100">Step-by-Step Path</span>
+                 <h2 className="text-3xl md:text-5xl font-display font-extrabold text-slate-900">The Transformation Journey</h2>
+                 <p className="text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                    How we guide children from digital distraction to absolute cognitive sovereignty.
+                 </p>
+              </div>
+
+              <div className="relative max-w-3xl mx-auto">
+                {/* Vertical Line */}
+                <div className="absolute top-0 bottom-0 left-8 md:left-1/2 w-1 bg-gradient-to-b from-indigo-200 via-violet-200 to-transparent -translate-x-1/2 rounded-full"></div>
+
+                {/* Step 1 */}
+                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between mb-12 group">
+                  <div className="md:w-5/12 pl-20 md:pl-0 md:text-right md:pr-12 space-y-2 order-2 md:order-1 mt-2 md:mt-0">
+                    <span className="text-[10px] font-mono text-indigo-500 font-bold uppercase tracking-widest">Phase 01</span>
+                    <h4 className="text-xl font-bold text-slate-900">The Biometric Discovery</h4>
+                    <p className="text-sm text-slate-600">We conduct a non-invasive DMIT scan to map the child's exact neurological baseline and learning style.</p>
+                  </div>
+                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
+                  <div className="md:w-5/12 order-3 md:order-2"></div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between mb-12 group">
+                  <div className="md:w-5/12 order-2 md:order-1"></div>
+                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
+                  <div className="md:w-5/12 pl-20 md:pl-12 space-y-2 order-3 md:order-2 mt-2 md:mt-0">
+                    <span className="text-[10px] font-mono text-violet-500 font-bold uppercase tracking-widest">Phase 02</span>
+                    <h4 className="text-xl font-bold text-slate-900">Cognitive Alignment</h4>
+                    <p className="text-sm text-slate-600">A pediatric counselor decodes the profile, giving parents actionable insights to avert friction and match coaching styles.</p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between mb-12 group">
+                  <div className="md:w-5/12 pl-20 md:pl-0 md:text-right md:pr-12 space-y-2 order-2 md:order-1 mt-2 md:mt-0">
+                    <span className="text-[10px] font-mono text-emerald-500 font-bold uppercase tracking-widest">Phase 03</span>
+                    <h4 className="text-xl font-bold text-slate-900">Brain Ignition</h4>
+                    <p className="text-sm text-slate-600">Interactive sensory labs shift the child into calm Alpha-wave states, restoring focus and photographic memory.</p>
+                  </div>
+                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
+                  <div className="md:w-5/12 order-3 md:order-2"></div>
+                </div>
+
+                {/* Step 4 */}
+                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between group">
+                  <div className="md:w-5/12 order-2 md:order-1"></div>
+                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
+                  <div className="md:w-5/12 pl-20 md:pl-12 space-y-2 order-3 md:order-2 mt-2 md:mt-0">
+                    <span className="text-[10px] font-mono text-amber-500 font-bold uppercase tracking-widest">Phase 04</span>
+                    <h4 className="text-xl font-bold text-slate-900">The Sovereign Student</h4>
+                    <p className="text-sm text-slate-600">The child operates with high moral integrity, zero digital dependency, and absolute neural sovereignty.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Testimonials loop */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {TESTIMONIALS.map((t) => (
@@ -1976,9 +2167,14 @@ export default function App() {
                   </div>
 
                   <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
-                    <div>
-                      <span className="font-bold text-slate-800 block">{t.parentName}</span>
-                      <span className="text-slate-400 text-[10px] font-mono uppercase">{t.parentProfession}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border border-indigo-200 shrink-0 overflow-hidden shadow-sm">
+                        {t.avatarUrl ? <img src={t.avatarUrl} alt={t.parentName} className="w-full h-full object-cover" /> : t.parentName.charAt(0)}
+                      </div>
+                      <div>
+                        <span className="font-bold text-slate-800 block">{t.parentName}</span>
+                        <span className="text-slate-400 text-[10px] font-mono uppercase">{t.parentProfession}</span>
+                      </div>
                     </div>
                     <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                       Profile: {t.childProfile}
@@ -2924,22 +3120,22 @@ export default function App() {
 
       {/* TRUSTED PROFESSIONAL FOOTER - hide on admin */}
       {currentPage !== "admin" && (
-      <footer className="relative z-30 bg-slate-50 border-t border-slate-200 pt-16 pb-12 mt-20">
+      <footer className="relative z-30 bg-[#0B1121] border-t border-indigo-900/50 pt-16 pb-12">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-4 gap-12 text-xs">
           
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 flex items-center justify-center rounded bg-indigo-50 border border-indigo-100 p-1">
+              <div className="w-10 h-10 flex items-center justify-center rounded bg-indigo-900/40 border border-indigo-500/30 p-1">
                 <BrainXLogo 
-                  className="w-8 h-8" 
+                  className="w-8 h-8 text-indigo-300" 
                 />
               </div>
               <div>
-                <span className="text-base font-display font-black uppercase tracking-tight text-slate-900">Brain<span className="text-indigo-600">X</span> India</span>
-                <span className="block text-[9px] font-sans text-indigo-600 uppercase tracking-widest font-black">Unwind the Genius</span>
+                <span className="text-base font-display font-black uppercase tracking-tight text-white">Brain<span className="text-indigo-400">X</span> India</span>
+                <span className="block text-[9px] font-sans text-indigo-400 uppercase tracking-widest font-black">Unwind the Genius</span>
               </div>
             </div>
-            <p className="text-slate-600 leading-relaxed font-sans font-medium">
+            <p className="text-slate-400 leading-relaxed font-sans font-medium">
               Empowering pediatric intelligence based on biometric ridge density studies and Howard Gardner multiple intelligence theory.
             </p>
             <div className="flex items-center gap-3 pt-2">
@@ -2947,79 +3143,79 @@ export default function App() {
                 href="https://www.linkedin.com/in/sanju-nair-s-brainx-b292b4b9?utm_content=profile&utm_medium=member_android&utm_source=chatgpt.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-white border border-slate-200 hover:border-[#0a66c2] hover:text-[#0a66c2] text-slate-500 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-sm"
+                className="w-8 h-8 bg-indigo-900/30 border border-indigo-500/30 hover:bg-[#0a66c2] hover:border-[#0a66c2] text-slate-300 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-sm"
                 title="LinkedIn Profile"
               >
-                <Linkedin className="w-4 h-4" />
+                <OriginalLinkedinIcon className="w-4 h-4" />
               </a>
               <a 
                 href="http://www.youtube.com/@brainxmasters4159?utm_source=chatgpt.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-white border border-slate-200 hover:border-[#ff0000] hover:text-[#ff0000] text-slate-500 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-sm"
+                className="w-8 h-8 bg-indigo-900/30 border border-indigo-500/30 hover:bg-[#ff0000] hover:border-[#ff0000] text-slate-300 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-sm"
                 title="BrainX Masters YouTube Channel"
               >
-                <Youtube className="w-4 h-4" />
+                <OriginalYoutubeIcon className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          <div className="space-y-3 font-sans font-medium text-slate-600">
-            <h5 className="font-display font-bold uppercase text-slate-900 text-xs">Quick Navigation</h5>
+          <div className="space-y-3 font-sans font-medium text-slate-400">
+            <h5 className="font-display font-bold uppercase text-white text-xs">Quick Navigation</h5>
             <ul className="space-y-2">
-              <li><button type="button" onClick={() => handlePageChange("home")} className="hover:text-indigo-600 text-left cursor-pointer">Home Base</button></li>
-              <li><button type="button" onClick={() => handlePageChange("about")} className="hover:text-indigo-600 text-left cursor-pointer">Origins & Gardner Base</button></li>
-              <li><button type="button" onClick={() => handlePageChange("programs")} className="hover:text-indigo-600 text-left cursor-pointer">Protocols Academies</button></li>
-              <li><button type="button" onClick={() => handlePageChange("partners")} className="hover:text-indigo-600 text-left cursor-pointer">Franchise & Maharashtra School Synergies</button></li>
+              <li><button type="button" onClick={() => handlePageChange("home")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Home Base</button></li>
+              <li><button type="button" onClick={() => handlePageChange("about")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Origins & Gardner Base</button></li>
+              <li><button type="button" onClick={() => handlePageChange("programs")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Protocols Academies</button></li>
+              <li><button type="button" onClick={() => handlePageChange("partners")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Franchise & Maharashtra School Synergies</button></li>
             </ul>
           </div>
 
-          <div className="space-y-3 font-sans font-medium text-slate-600">
-            <h5 className="font-display font-bold uppercase text-slate-900 text-xs">Programs & Tiers</h5>
+          <div className="space-y-3 font-sans font-medium text-slate-400">
+            <h5 className="font-display font-bold uppercase text-white text-xs">Programs & Tiers</h5>
             <ul className="space-y-2">
-              <li><button type="button" onClick={() => { setSelectedProgramId("dmit"); handlePageChange("programs"); }} className="hover:text-indigo-600 text-left cursor-pointer">DMIT Fingerprint Mapping</button></li>
-              <li><button type="button" onClick={() => { setSelectedProgramId("midbrain"); handlePageChange("programs"); }} className="hover:text-indigo-600 text-left cursor-pointer">Centre Brain Ignition</button></li>
-              <li><button type="button" onClick={() => { setSelectedProgramId("parenting"); handlePageChange("programs"); }} className="hover:text-indigo-600 text-left cursor-pointer">Modern-Day Parenting Challenges</button></li>
-              <li><button type="button" onClick={() => { setSelectedProgramId("value"); handlePageChange("programs"); }} className="hover:text-indigo-600 text-left cursor-pointer">Importance of Value Education Course</button></li>
+              <li><button type="button" onClick={() => { setSelectedProgramId("dmit"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">DMIT Fingerprint Mapping</button></li>
+              <li><button type="button" onClick={() => { setSelectedProgramId("midbrain"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Centre Brain Ignition</button></li>
+              <li><button type="button" onClick={() => { setSelectedProgramId("parenting"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Modern-Day Parenting Challenges</button></li>
+              <li><button type="button" onClick={() => { setSelectedProgramId("value"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Importance of Value Education Course</button></li>
             </ul>
           </div>
 
-          <div className="space-y-4 font-sans font-medium text-slate-650">
-            <h5 className="font-display font-bold uppercase text-slate-900 text-xs">Registered Address</h5>
-            <p className="text-slate-600 leading-relaxed font-sans">
+          <div className="space-y-4 font-sans font-medium text-slate-400">
+            <h5 className="font-display font-bold uppercase text-white text-xs">Registered Address</h5>
+            <p className="text-slate-400 leading-relaxed font-sans">
               Address:<br />
               E/1401, Runal Gateway,<br />
               Ravet, Pune
             </p>
-            <div className="text-slate-600 space-y-1 font-mono text-[11px]">
+            <div className="text-slate-400 space-y-1 font-mono text-[11px]">
               <div>
-                <span className="font-sans font-bold">Mobile:</span>{" "}
-                <a href="tel:+918888004111" className="hover:text-indigo-600 underline">
+                <span className="font-sans font-bold text-slate-300">Mobile:</span>{" "}
+                <a href="tel:+918888004111" className="hover:text-indigo-400 underline transition-colors">
                   +91 88880 04111
                 </a>
               </div>
               <div>
-                <span className="font-sans font-bold">WhatsApp:</span>{" "}
-                <a href="https://wa.me/918888004111" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 underline">
+                <span className="font-sans font-bold text-slate-300">WhatsApp:</span>{" "}
+                <a href="https://wa.me/918888004111" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 underline transition-colors">
                   +91 88880 04111
                 </a>
               </div>
               <div className="truncate">
-                <span className="font-sans font-bold">Email:</span>{" "}
-                <a href="mailto:brainx2010@gmail.com" className="hover:text-indigo-600 underline">
+                <span className="font-sans font-bold text-slate-300">Email:</span>{" "}
+                <a href="mailto:brainx2010@gmail.com" className="hover:text-indigo-400 underline transition-colors">
                   brainx2010@gmail.com
                 </a>
               </div>
             </div>
             {/* Quick Actions */}
             <div className="flex flex-wrap gap-2 pt-2">
-              <a href="tel:+918888004111" className="px-2.5 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 rounded text-[10px] font-mono font-bold tracking-wider uppercase text-center transition-all cursor-pointer">
+              <a href="tel:+918888004111" className="px-2.5 py-1.5 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/40 rounded text-[10px] font-mono font-bold tracking-wider uppercase text-center transition-all cursor-pointer">
                 Call Now
               </a>
-              <a href="https://wa.me/918888004111" target="_blank" rel="noopener noreferrer" className="px-2.5 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 rounded text-[10px] font-mono font-bold tracking-wider uppercase text-center transition-all cursor-pointer">
+              <a href="https://wa.me/918888004111" target="_blank" rel="noopener noreferrer" className="px-2.5 py-1.5 bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-600/40 rounded text-[10px] font-mono font-bold tracking-wider uppercase text-center transition-all cursor-pointer">
                 WhatsApp Us
               </a>
-              <a href="mailto:brainx2010@gmail.com" className="px-2.5 py-1.5 bg-slate-100 border border-slate-200 text-slate-800 hover:bg-slate-200 rounded text-[10px] font-mono font-bold tracking-wider uppercase text-center transition-all cursor-pointer">
+              <a href="mailto:brainx2010@gmail.com" className="px-2.5 py-1.5 bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 rounded text-[10px] font-mono font-bold tracking-wider uppercase text-center transition-all cursor-pointer">
                 Email Us
               </a>
             </div>
@@ -3027,16 +3223,16 @@ export default function App() {
 
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pt-8 border-t border-slate-200 mt-12 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-slate-500 gap-4">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 pt-8 border-t border-indigo-900/50 mt-12 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-slate-500 gap-4">
           <span 
-            className="hover:text-[#4f46e5] transition-colors select-none"
+            className="hover:text-indigo-400 transition-colors select-none"
           >
             &copy; {new Date().getFullYear()} BrainX India National Level Organisation. All Rights Reserved.
           </span>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-indigo-600">Pediatric Privacy Policy</a>
-            <a href="#" className="hover:text-indigo-600">Franchise Disclosures</a>
-            <a href="#" className="hover:text-indigo-600">School Licensing agreement</a>
+            <a href="#" className="hover:text-indigo-400 transition-colors">Pediatric Privacy Policy</a>
+            <a href="#" className="hover:text-indigo-400 transition-colors">Franchise Disclosures</a>
+            <a href="#" className="hover:text-indigo-400 transition-colors">School Licensing agreement</a>
           </div>
         </div>
       </footer>

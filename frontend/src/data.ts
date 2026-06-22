@@ -41,6 +41,7 @@ export const PROGRAMS: Program[] = [
     duration: "1 Biometric Mapping Scan + 2-Hour Pediatric Counselor Consultation",
     cognitiveDominance: "Prefrontal Leadership Index, Left-vs-Right Hemisphere Coherence Index.",
     colorTheme: "cyan",
+    bannerImage: "/images/program_dmit_1781776619206.png",
     metrics: ["Lobe Density Strengths", "Inborn Talent Propensities", "Visual vs Auditory vs Kinesthetic (VAK) Ratio", "Creative vs Logical Hemisphere Dominance"],
     benefits: [
       "No more academic guesswork: Align secondary coaching classes with their biological sensory input type.",
@@ -73,6 +74,7 @@ export const PROGRAMS: Program[] = [
     duration: "12-Week Interactive Lab Series (Interactive Cohorts)",
     cognitiveDominance: "Instant Alpha Wave Transition, Visual Spatial Tracking Velocity.",
     colorTheme: "violet",
+    bannerImage: "/images/program_centre_1781776635602.png",
     metrics: ["Alpha-Wave Output Coherence", "Peripheral Tracking Width", "Non-Visual Color Synthesis Rate", "Focus Recovery Speed"],
     benefits: [
       "Restore shattered focus: Transition from digital hyper-activation to deep concentration within 90 seconds.",
@@ -105,6 +107,7 @@ export const PROGRAMS: Program[] = [
     duration: "3-Hour Deep-Dive Live Interactive Masterclass & Q&A",
     cognitiveDominance: "Digital Screen Defense Mechanics, High-EQ Parent-Child Alignment.",
     colorTheme: "emerald",
+    bannerImage: "/images/program_parenting_1781776649774.png",
     metrics: ["Digital Toxicity Baseline", "Home Acoustic Haven Score", "EQ Communication Index", "Screen-to-Active Ratio"],
     benefits: [
       "Digital Addiction & Screen Time: Counter excessive use of smartphones, tablets, gaming, and social media while establishing sleep-safe routines.",
@@ -138,6 +141,7 @@ export const PROGRAMS: Program[] = [
     duration: "6-Month Integrated Ethics & Focus Syllabus",
     cognitiveDominance: "Empathy Quotient (EQ), Adversity Quotient (AQ), Ethical Decision Velocity.",
     colorTheme: "amber",
+    bannerImage: "/images/program_value_1781776663397.png",
     metrics: ["Moral Judgment Index", "Integrity Coefficient Score", "Adversity Quotient Rating", "Interpersonal Communication Comfort"],
     benefits: [
       "Builds Strong Character: Fosters internal integrity, self-discipline, and deep respect for elders and teachers.",
@@ -173,7 +177,8 @@ export const TESTIMONIALS: Testimonial[] = [
     storyHeading: "Unlocking extraordinary photographic memory and calm focus, replacing tablet addiction.",
     storyText: "Our son Aarav was highly hyperactive, throwing intense tantrums whenever the iPad was removed. As a surgeon, I knew digital over-stimulation was straining his prefrontal cortex. BrainX India scanned his fingerprints to reveal his dominant parietal lobe and kinesthetic style. We enrolled him in the Centre Brain Ignition program. The change is remarkable: Aarav now sits with deep focus for long periods, reads books calmly, and can even sense spatial colors blindfolded with outstanding alphawave coherence. He has evolved from a digital consumer into an active human thinker.",
     resultsObserved: ["90% reduction in digital cravings in 30 days", "Can recall 12-digit math sequences visually with ease", "Profound mutual respect and positive communication at home"],
-    initialPainPoint: "Severe mobile-screen dependency, math anxiety, lack of core focus."
+    initialPainPoint: "Severe mobile-screen dependency, math anxiety, lack of core focus.",
+    avatarUrl: "https://i.pravatar.cc/150?img=11"
   },
   {
     id: "t2",
@@ -184,7 +189,8 @@ export const TESTIMONIALS: Testimonial[] = [
     storyHeading: "Transforming exam anxiety into resilient, high-EQ leadership.",
     storyText: "Standard schools teach memorization, which AI does instantly. My daughter Ananya was highly anxious about her mock exams and suffered low self-esteem. BrainX provided an unerring DMIT blueprint of her Multiple Intelligences, followed by character training. She learned to embrace her high interpersonal potential, leading her school's science team to victory. BrainX did not just train her brain; they built her character and resilience for the next century.",
     resultsObserved: ["3x increase in public speaking confidence metrics", "Avenue for high-integrity independent homework completed", "Profound emotional resilience in dealing with competitive challenges"],
-    initialPainPoint: "Exam panic attacks, social isolation, and rigid rote-learning burnout."
+    initialPainPoint: "Exam panic attacks, social isolation, and rigid rote-learning burnout.",
+    avatarUrl: "https://i.pravatar.cc/150?img=5"
   }
 ];
 

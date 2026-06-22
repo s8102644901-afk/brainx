@@ -13,6 +13,7 @@ export interface Program {
   cognitiveDominance: string;
   colorTheme: "cyan" | "violet" | "emerald" | "amber";
   faqs: { question: string; answer: string }[];
+  bannerImage?: string;
 }
 
 export interface ChatMessage {
@@ -53,6 +54,7 @@ export interface Testimonial {
   storyText: string;
   resultsObserved: string[];
   initialPainPoint: string;
+  avatarUrl?: string;
 }
 
 export interface BrandAsset {
