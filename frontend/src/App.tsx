@@ -413,8 +413,8 @@ export default function App() {
       link.rel = "icon";
       document.head.appendChild(link);
     }
-    link.href = logoImage;
-    document.title = "BrainX India | Unwind the Genius";
+    link.href = "/favicon.jpg";
+    document.title = "BrainX India | Preparing Minds for the AI Future";
 
     // 2. Loading animation progress updates
     const stages = [
@@ -670,9 +670,9 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-12 flex items-center justify-between gap-1">
             
             {/* Organisation Brand Logo Area */}
-            <button 
-              type="button"
-              onClick={() => handlePageChange("home")}
+            <a 
+              href="#home"
+              onClick={(e) => { e.preventDefault(); handlePageChange("home"); }}
               className="flex items-center gap-2 sm:gap-3 text-left focus:outline-none cursor-pointer group shrink-0"
             >
               <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 p-0 overflow-hidden group-hover:border-indigo-550 transition-all duration-300 shadow-sm shrink-0">
@@ -685,70 +685,70 @@ export default function App() {
                 </div>
                 <span className="hidden sm:block text-[8px] tracking-widest font-sans text-indigo-600 uppercase font-bold">UNWIND THE GENIUS</span>
               </div>
-            </button>
+            </a>
 
             {/* Core Multi-page Nav Links */}
             <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-xs font-mono uppercase tracking-wider text-slate-600">
-              <button 
-                type="button" 
-                onClick={() => handlePageChange("home")} 
+              <a 
+                href="#home" 
+                onClick={(e) => { e.preventDefault(); handlePageChange("home"); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer ${currentPage === "home" ? "text-indigo-600 border-b-2 border-indigo-600 font-bold" : ""}`}
               >
                 Home
-              </button>
-              <button 
-                type="button" 
-                onClick={() => handlePageChange("about")} 
+              </a>
+              <a 
+                href="#about" 
+                onClick={(e) => { e.preventDefault(); handlePageChange("about"); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer ${currentPage === "about" ? "text-indigo-600 border-b-2 border-indigo-600 font-bold" : ""}`}
               >
                 Origins
-              </button>
-              <button 
-                type="button" 
-                onClick={() => handlePageChange("programs")} 
+              </a>
+              <a 
+                href="#programs" 
+                onClick={(e) => { e.preventDefault(); handlePageChange("programs"); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer ${currentPage === "programs" ? "text-indigo-600 border-b-2 border-indigo-600 font-bold" : ""}`}
               >
                 Academies
-              </button>
-              <button 
-                type="button" 
-                onClick={() => handlePageChange("partners")} 
+              </a>
+              <a 
+                href="#partners" 
+                onClick={(e) => { e.preventDefault(); handlePageChange("partners"); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer ${currentPage === "partners" ? "text-indigo-600 border-b-2 border-indigo-600 font-bold" : ""}`}
               >
                 Partnerships
-              </button>
-              <button 
-                type="button" 
-                onClick={() => handlePageChange("stories")} 
+              </a>
+              <a 
+                href="#stories" 
+                onClick={(e) => { e.preventDefault(); handlePageChange("stories"); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer ${currentPage === "stories" ? "text-indigo-600 border-b-2 border-indigo-600 font-bold" : ""}`}
               >
                 Impact
-              </button>
-              <button 
-                type="button" 
-                onClick={() => handlePageChange("resources")} 
+              </a>
+              <a 
+                href="#resources" 
+                onClick={(e) => { e.preventDefault(); handlePageChange("resources"); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer ${currentPage === "resources" ? "text-indigo-600 border-b-2 border-indigo-600 font-bold" : ""}`}
               >
                 Resources & Q&A
-              </button>
-              <button 
-                type="button" 
-                onClick={() => handlePageChange("gallery")} 
+              </a>
+              <a 
+                href="#gallery" 
+                onClick={(e) => { e.preventDefault(); handlePageChange("gallery"); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer ${currentPage === "gallery" ? "text-indigo-600 border-b-2 border-indigo-600 font-bold" : ""}`}
               >
                 Gallery
-              </button>
-              <button 
-                type="button" 
-                onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })} 
+              </a>
+              <a 
+                href="#contact" 
+                onClick={(e) => { e.preventDefault(); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }} 
                 className={`py-1 hover:text-indigo-600 transition-all cursor-pointer`}
               >
                 Contact
-              </button>
+              </a>
               {isAdminLoggedIn && (
-                <button type="button" onClick={() => handlePageChange("admin" as any)} className="py-1 hover:text-rose-600 transition-all cursor-pointer text-rose-500 font-bold">
+                <a href="#admin" onClick={(e) => { e.preventDefault(); handlePageChange("admin" as any); }} className="py-1 hover:text-rose-600 transition-all cursor-pointer text-rose-500 font-bold">
                   Admin
-                </button>
+                </a>
               )}
             </div>
 
@@ -800,16 +800,16 @@ export default function App() {
             className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200 ${isMobileMenuOpen ? "max-h-[600px] opacity-100 visible" : "max-h-0 opacity-0 invisible"}`}
           >
             <div className="px-6 py-4 flex flex-col gap-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-600">
-              <button type="button" onClick={() => handlePageChange("home")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "home" ? "text-indigo-600" : ""}`}>Home</button>
-              <button type="button" onClick={() => handlePageChange("about")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "about" ? "text-indigo-600" : ""}`}>Origins</button>
-              <button type="button" onClick={() => handlePageChange("programs")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "programs" ? "text-indigo-600" : ""}`}>Academies</button>
-              <button type="button" onClick={() => handlePageChange("partners")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "partners" ? "text-indigo-600" : ""}`}>Partnerships</button>
-              <button type="button" onClick={() => handlePageChange("stories")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "stories" ? "text-indigo-600" : ""}`}>Impact</button>
-              <button type="button" onClick={() => handlePageChange("resources")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "resources" ? "text-indigo-600" : ""}`}>Resources & Q&A</button>
-              <button type="button" onClick={() => handlePageChange("gallery")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "gallery" ? "text-indigo-600" : ""}`}>Gallery</button>
-              <button type="button" onClick={() => { setIsMobileMenuOpen(false); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }} className="text-left hover:text-indigo-600 transition-colors">Contact</button>
+              <a href="#home" onClick={(e) => { e.preventDefault(); handlePageChange("home"); }} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "home" ? "text-indigo-600" : ""}`}>Home</a>
+              <a href="#about" onClick={(e) => { e.preventDefault(); handlePageChange("about"); }} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "about" ? "text-indigo-600" : ""}`}>Origins</a>
+              <a href="#programs" onClick={(e) => { e.preventDefault(); handlePageChange("programs"); }} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "programs" ? "text-indigo-600" : ""}`}>Academies</a>
+              <a href="#partners" onClick={(e) => { e.preventDefault(); handlePageChange("partners"); }} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "partners" ? "text-indigo-600" : ""}`}>Partnerships</a>
+              <a href="#stories" onClick={(e) => { e.preventDefault(); handlePageChange("stories"); }} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "stories" ? "text-indigo-600" : ""}`}>Impact</a>
+              <a href="#resources" onClick={(e) => { e.preventDefault(); handlePageChange("resources"); }} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "resources" ? "text-indigo-600" : ""}`}>Resources & Q&A</a>
+              <a href="#gallery" onClick={(e) => { e.preventDefault(); handlePageChange("gallery"); }} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "gallery" ? "text-indigo-600" : ""}`}>Gallery</a>
+              <a href="#contact" onClick={(e) => { e.preventDefault(); setIsMobileMenuOpen(false); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }} className="text-left hover:text-indigo-600 transition-colors">Contact</a>
               {isAdminLoggedIn && (
-                <button type="button" onClick={() => handlePageChange("admin" as any)} className="text-left text-rose-500 hover:text-rose-600 transition-colors">Admin</button>
+                <a href="#admin" onClick={(e) => { e.preventDefault(); handlePageChange("admin" as any); }} className="text-left text-rose-500 hover:text-rose-600 transition-colors">Admin</a>
               )}
               
               <div className="flex gap-4 pt-4 border-t border-slate-200">
@@ -1502,7 +1502,7 @@ export default function App() {
             <div id="origins-header-cols" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-6 space-y-4 text-left">
                 <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">BrainX India Origins</span>
-                <h2 className="text-4xl md:text-6xl font-display font-black text-slate-900 leading-tight">Redesigning Intelligence & Ethics.</h2>
+                <h1 className="text-4xl md:text-6xl font-display font-black text-slate-900 leading-tight">Redesigning Intelligence & Ethics.</h1>
                 <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-sans">
                   We believe that education must prioritize spatial, logical, musical, and intrapersonal intelligences alongside critical moral systems. Our goal is to align childhood developmental paths with scientific biology.
                 </p>
@@ -1687,7 +1687,7 @@ export default function App() {
             
             <div className="space-y-3 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">BrainX India Academies</span>
-              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Our 4 Core Protocols.</h2>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Our 4 Core Protocols.</h1>
               <p className="text-sm sm:text-base text-slate-705">
                 Click down to explore biological metrics, stage-by-stage timelines, and customized parenting baselines.
               </p>
@@ -1862,7 +1862,7 @@ export default function App() {
             {/* Header branding copy */}
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-605 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">Synergies & Franchises</span>
-              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Join the Intelligence Revolution.</h2>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Join the Intelligence Revolution.</h1>
               <p className="text-base sm:text-lg text-slate-650 leading-relaxed">
                 Whether you are an aspiring entrepreneur seeking a high-return brain-science franchise, or an elite school administrator looking to secure your student population in Pune or pan-India, we have custom collaboration paths.
               </p>
@@ -2126,7 +2126,7 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max">Clinical Evidence Validation</span>
-              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Transformed Childhoods.</h2>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Transformed Childhoods.</h1>
               <p className="text-base sm:text-lg text-slate-650 leading-relaxed">
                 Review case profile progressions from active screen reliance to peak intellectual and moral focus, recorded across Pune and our pan-India network:
               </p>
@@ -2628,7 +2628,7 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max">Blogs & Publications Hub</span>
-              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Knowledge for AI-Era Parents.</h2>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Knowledge for AI-Era Parents.</h1>
               <p className="text-sm text-slate-705">
                 Explore developmental science, screens detox research, and customized Multiple Intelligence strategies.
               </p>
@@ -2739,7 +2739,7 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max">Interactive Activity Logs</span>
-              <h2 className="text-4xl md:text-6xl font-display font-black text-slate-900 font-extrabold">Life Inside BrainX India.</h2>
+              <h1 className="text-4xl md:text-6xl font-display font-black text-slate-900 font-extrabold">Life Inside BrainX India.</h1>
               <p className="text-base sm:text-lg text-slate-705 leading-relaxed">
                 Explore real interactive illustrations of our diagnostic sessions, multiple intelligence scans, parent de-escalation seminars, and certified student bootcamps conducted across Pune and pan-India franchise corridors:
               </p>
@@ -2897,7 +2897,7 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">Reach Our Offices</span>
-              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Contact & Consultation.</h2>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Contact & Consultation.</h1>
               <p className="text-base sm:text-lg text-slate-705 leading-relaxed">
                 Gain instant clarity. Fill parent details below to reserve your complimentary counseling session, or visit our support channels directly.
               </p>
@@ -3267,20 +3267,20 @@ export default function App() {
           <div className="space-y-3 font-sans font-medium text-slate-400">
             <h5 className="font-display font-bold uppercase text-white text-xs">Quick Navigation</h5>
             <ul className="space-y-2">
-              <li><button type="button" onClick={() => handlePageChange("home")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Home Base</button></li>
-              <li><button type="button" onClick={() => handlePageChange("about")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Origins & Gardner Base</button></li>
-              <li><button type="button" onClick={() => handlePageChange("programs")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Protocols Academies</button></li>
-              <li><button type="button" onClick={() => handlePageChange("partners")} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Franchise & Maharashtra School Synergies</button></li>
+              <li><a href="#home" onClick={(e) => { e.preventDefault(); handlePageChange("home"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">Home Base</a></li>
+              <li><a href="#about" onClick={(e) => { e.preventDefault(); handlePageChange("about"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">Origins & Gardner Base</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">Protocols Academies</a></li>
+              <li><a href="#partners" onClick={(e) => { e.preventDefault(); handlePageChange("partners"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">Franchise & Maharashtra School Synergies</a></li>
             </ul>
           </div>
 
           <div className="space-y-3 font-sans font-medium text-slate-400">
             <h5 className="font-display font-bold uppercase text-white text-xs">Programs & Tiers</h5>
             <ul className="space-y-2">
-              <li><button type="button" onClick={() => { setSelectedProgramId("dmit"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">DMIT Fingerprint Mapping</button></li>
-              <li><button type="button" onClick={() => { setSelectedProgramId("midbrain"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Centre Brain Ignition</button></li>
-              <li><button type="button" onClick={() => { setSelectedProgramId("parenting"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Modern-Day Parenting Challenges</button></li>
-              <li><button type="button" onClick={() => { setSelectedProgramId("value"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors">Importance of Value Education Course</button></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); setSelectedProgramId("dmit"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">DMIT Fingerprint Mapping</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); setSelectedProgramId("midbrain"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">Centre Brain Ignition</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); setSelectedProgramId("parenting"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">Modern-Day Parenting Challenges</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); setSelectedProgramId("value"); handlePageChange("programs"); }} className="hover:text-indigo-400 text-left cursor-pointer transition-colors block">Importance of Value Education Course</a></li>
             </ul>
           </div>
 

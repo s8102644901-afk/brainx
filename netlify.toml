@@ -1,4 +1,11 @@
 [[redirects]]
+  from = "https://www.brainxindia.com/*"
+  to = "https://brainxindia.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
