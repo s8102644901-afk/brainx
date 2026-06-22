@@ -28,7 +28,9 @@ export default function AetheriaAssistant() {
 
   // Scroll to bottom of message list on updates
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 1) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
   }, [messages]);
 
   const handleSendMessage = async (textToSend: string) => {

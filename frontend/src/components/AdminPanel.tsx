@@ -90,6 +90,8 @@ interface AdminPanelProps {
   setDynamicEvents: React.Dispatch<React.SetStateAction<Event[]>>;
   extraCaseFiles: CaseFile[];
   setExtraCaseFiles: React.Dispatch<React.SetStateAction<CaseFile[]>>;
+  customerLogs: any[];
+  setCustomerLogs: React.Dispatch<React.SetStateAction<any[]>>;
   onLogout: () => void;
 }
 
@@ -98,9 +100,11 @@ export default function AdminPanel({
   setDynamicEvents,
   extraCaseFiles,
   setExtraCaseFiles,
+  customerLogs,
+  setCustomerLogs,
   onLogout,
 }: AdminPanelProps) {
-  const [adminTab, setAdminTab] = useState<"events" | "cases">("events");
+  const [adminTab, setAdminTab] = useState<"events" | "cases" | "analytics">("analytics");
   const [showAddEventForm, setShowAddEventForm] = useState(false);
   const [showAddCaseForm, setShowAddCaseForm] = useState(false);
   const [editingEventId, setEditingEventId] = useState<number | null>(null);
@@ -118,6 +122,54 @@ export default function AdminPanel({
   });
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+
+  // Analytics Filters
+  const [filterName, setFilterName] = useState("");
+  const [filterDate, setFilterDate] = useState("");
+
+  const filteredLogs = React.useMemo(() => {
+    const result = customerLogs.filter((log) => {
+      const matchName = filterName ? log.name.toLowerCase().includes(filterName.toLowerCase()) : true;
+      let matchDate = true;
+      if (filterDate) {
+        // Log dates are ISO strings like "2026-06-05T14:50:13.000Z"
+        // Filter date is YYYY-MM-DD format from the date input
+        const logDateStr = new Date(log.date).toISOString().split('T')[0];
+        matchDate = logDateStr === filterDate;
+      }
+      return matchName && matchDate;
+    });
+    // Sort descending by date (newest first)
+    return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [customerLogs, filterName, filterDate]);
+
+  React.useEffect(() => {
+    if (adminTab === "analytics") {
+      fetch(`${API_BASE_URL}/api/admin/analytics`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.logs) {
+            // Merge with local logs, prioritizing local logs by preventing duplicates
+            setCustomerLogs(prev => {
+              const localLogMap = new Map(prev.map(l => [l.id, l]));
+              
+              // Google Sheet logs might overlap if we don't have perfect IDs.
+              // Since sheet IDs are `sheet_X` and local IDs are `lead_Y`, we can just prepend.
+              // But wait, to avoid endless duplication on tab switch, let's filter out old `sheet_X` logs from prev first.
+              const prevWithoutSheets = prev.filter(l => !l.id.startsWith("sheet_"));
+              
+              const merged = [...prevWithoutSheets, ...data.logs];
+              
+              // Sort by date descending
+              merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+              
+              return merged;
+            });
+          }
+        })
+        .catch(err => console.error("Failed to fetch sheets analytics:", err));
+    }
+  }, [adminTab, API_BASE_URL, setCustomerLogs]);
 
   const generateAISummary = async (titleToUse?: string) => {
     const title = titleToUse !== undefined ? titleToUse : newEvent.title;
@@ -436,6 +488,18 @@ export default function AdminPanel({
         >
           <FileText className="w-4 h-4" />
           <span>Custom Case Chronicles ({extraCaseFiles.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setAdminTab("analytics")}
+          className={`px-5 py-3 rounded-xl text-xs font-mono font-bold uppercase transition-all cursor-pointer flex items-center gap-2 ${
+            adminTab === "analytics"
+              ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/15"
+              : "bg-white border border-slate-200 text-slate-500 hover:text-slate-800"
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>Analytics & Logs ({customerLogs?.length || 0})</span>
         </button>
       </div>
 
@@ -1087,6 +1151,120 @@ export default function AdminPanel({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ANALYTICS & LOGS TAB */}
+      {adminTab === "analytics" && (
+        <div className="space-y-8 animate-fadeIn">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-display font-black text-slate-900">
+              Customer Analytics & Logs
+            </h3>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm("Are you sure you want to clear all customer logs? This cannot be undone.")) {
+                  setCustomerLogs([]);
+                  localStorage.removeItem("brainx_customer_logs");
+                }
+              }}
+              className="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 font-mono font-bold text-xs uppercase rounded-xl cursor-pointer transition-all flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Clear All Logs</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">Total Leads</span>
+              <span className="text-3xl font-display font-black text-indigo-600">{customerLogs?.length || 0}</span>
+            </div>
+            <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">Bookings</span>
+              <span className="text-3xl font-display font-black text-emerald-600">{customerLogs?.filter(l => l.type === "Booking").length || 0}</span>
+            </div>
+            <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">Franchise & School</span>
+              <span className="text-3xl font-display font-black text-amber-600">{customerLogs?.filter(l => l.type === "Franchise" || l.type === "School").length || 0}</span>
+            </div>
+            <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">Consultations</span>
+              <span className="text-3xl font-display font-black text-violet-600">{customerLogs?.filter(l => l.type === "Consultation").length || 0}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <input
+                type="text"
+                placeholder="Filter by Customer Name..."
+                value={filterName}
+                onChange={(e) => setFilterName(e.target.value)}
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-sans text-sm focus:outline-none focus:border-indigo-500"
+              />
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="flex-1 sm:max-w-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-sans text-sm focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 font-mono text-[10px] uppercase tracking-wider text-slate-500 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 font-bold">Date</th>
+                    <th className="px-6 py-4 font-bold">Type</th>
+                    <th className="px-6 py-4 font-bold">Customer Name</th>
+                    <th className="px-6 py-4 font-bold">Contact</th>
+                    <th className="px-6 py-4 font-bold">Extra Details</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-sans">
+                  {(!filteredLogs || filteredLogs.length === 0) ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center text-slate-400 font-mono">
+                        No customer logs found.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-slate-500">
+                          {new Date(log.date).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase font-mono ${
+                            log.type === "Booking" ? "bg-emerald-100 text-emerald-700" :
+                            log.type === "Franchise" ? "bg-amber-100 text-amber-700" :
+                            log.type === "School" ? "bg-blue-100 text-blue-700" :
+                            "bg-violet-100 text-violet-700"
+                          }`}>
+                            {log.type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-slate-900">{log.name}</td>
+                        <td className="px-6 py-4 text-slate-600 font-mono">{log.phone}</td>
+                        <td className="px-6 py-4 text-slate-500 text-[10px] max-w-xs truncate" title={log.extraDetails}>{log.extraDetails || "-"}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

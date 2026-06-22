@@ -64,3 +64,12 @@ export interface BrandAsset {
   colorTheory: { name: string; hex: string; psychology: string }[];
   typography: { role: string; family: string; specs: string }[];
 }
+
+export interface CustomerLog {
+  id: string;
+  type: "Booking" | "Franchise" | "School" | "Consultation";
+  name: string;
+  phone: string;
+  date: string;
+  extraDetails?: string;
+}

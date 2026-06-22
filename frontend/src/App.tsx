@@ -42,6 +42,14 @@ import { PROGRAMS, TESTIMONIALS, SEO_POSTS, BRAND_ASSETS, STATISTICS } from "./d
 import logoImage from "./assets/images/brainx_logo_1780642057674.jpg";
 // @ts-ignore
 import brenixImg from "./assets/images/brenix.png";
+// @ts-ignore
+import journey1Img from "./assets/images/journey-1.jpeg";
+// @ts-ignore
+import journey2Img from "./assets/images/journey-2.jpeg";
+// @ts-ignore
+import journey3Img from "./assets/images/journey-3.jpeg";
+// @ts-ignore
+import journey4Img from "./assets/images/journey-4.jpeg";
 import AetheriaAssistant from "./components/AetheriaAssistant";
 import CinematicBackground from "./components/CinematicBackground";
 import BrainHologram from "./components/BrainHologram";
@@ -232,42 +240,54 @@ export default function App() {
   const [bootStage, setBootStage] = useState<string>("SYSTEM BOOTING...");
 
   // Navigation: Multi-page router state
-  const [currentPage, setCurrentPage] = useState<"home" | "about" | "programs" | "partners" | "stories" | "resources" | "gallery" | "contact" | "admin">("home");
+  const ADMIN_SECURE_PATH = import.meta.env.VITE_ADMIN_SECURE_PATH || "/admin";
+  const [currentPage, setCurrentPage] = useState<"home" | "about" | "programs" | "partners" | "stories" | "resources" | "gallery" | "contact" | "admin">(() => {
+    const path = window.location.pathname.replace(/\/$/, "");
+    const securePath = ADMIN_SECURE_PATH.replace(/\/$/, "");
+    if (path === securePath) return "admin";
+    
+    const hash = window.location.hash.replace("#", "");
+    const validPages = ["home", "about", "programs", "partners", "stories", "resources", "gallery", "contact", "admin"];
+    if (hash && validPages.includes(hash)) {
+      return hash as any;
+    }
+    return "home";
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
-  // Sync URL hash with component state
+  // Sync URL with component state
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace("#", "");
-      const validPages = ["home", "about", "programs", "partners", "stories", "resources", "gallery", "contact", "admin"];
-      if (validPages.includes(hash)) {
-        setCurrentPage(hash as any);
-      } else if (!hash || hash === "/") {
-        setCurrentPage("home");
-      }
-    };
-
-    // On first load, always default to home and clear any lingering URL hash
-    if (window.location.hash !== "#home") {
-      window.history.replaceState(null, "", "/#home");
-    }
-    setCurrentPage("home");
-    
     // Force scroll to top on reload, disabling browser scroll restoration
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
     setTimeout(() => window.scrollTo(0, 0), 0);
 
+    const handleNavigation = () => {
+      const path = window.location.pathname.replace(/\/$/, "");
+      const securePath = ADMIN_SECURE_PATH.replace(/\/$/, "");
+      if (path === securePath) {
+        setCurrentPage("admin");
+        return;
+      }
+      
+      const hash = window.location.hash.replace("#", "");
+      const validPages = ["home", "about", "programs", "partners", "stories", "resources", "gallery", "contact", "admin"];
+      if (hash && validPages.includes(hash)) {
+        setCurrentPage(hash as any);
+      } else if (!hash || hash === "/") {
+        setCurrentPage("home");
+      }
+    };
 
-    window.addEventListener("hashchange", handleHashChange);
-    window.addEventListener("popstate", handleHashChange);
+    window.addEventListener("hashchange", handleNavigation);
+    window.addEventListener("popstate", handleNavigation);
     
     return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-      window.removeEventListener("popstate", handleHashChange);
+      window.removeEventListener("hashchange", handleNavigation);
+      window.removeEventListener("popstate", handleNavigation);
     };
-  }, []);
+  }, [ADMIN_SECURE_PATH]);
 
   // Admin and Dynamic Content States
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
@@ -297,6 +317,36 @@ export default function App() {
     return [];
   });
   const [footerClickCount, setFooterClickCount] = useState(0);
+  
+  // Customer Logs (Analytics Dashboard Feature)
+  const [customerLogs, setCustomerLogs] = useState<any[]>(() => {
+    const saved = localStorage.getItem("brainx_customer_logs");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.length > 0) {
+           return parsed.filter((l: any) => !l.id.includes("lead_mock_")); // Filter out any old mock data
+        }
+      } catch (e) {
+        console.error("Failed to parse customer logs from localStorage:", e);
+      }
+    }
+    return [];
+  });
+
+  const addCustomerLog = (type: "Booking" | "Franchise" | "School" | "Consultation", name: string, phone: string, extraDetails?: string) => {
+    const newLog = {
+      id: `lead_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      type,
+      name,
+      phone,
+      date: new Date().toISOString(),
+      extraDetails
+    };
+    const updatedLogs = [newLog, ...customerLogs];
+    setCustomerLogs(updatedLogs);
+    localStorage.setItem("brainx_customer_logs", JSON.stringify(updatedLogs));
+  };
   
   // Programs internal tab selection
   const [selectedProgramId, setSelectedProgramId] = useState<string>("dmit");
@@ -413,6 +463,10 @@ export default function App() {
     setTimeout(() => {
       setIsBookingSubmitting(false);
       setBookingResponse(`RESERVATION COMMITTED: Seat locked for Parent ${bookingName} at our center near ${bookingLocation}. Our diagnostics coordinator will reach you on ${bookingPhone} within 4 business hours to complete the biometric protocols.`);
+      
+      // Log the lead
+      addCustomerLog("Booking", bookingName, bookingPhone, `Program: ${bookingProgram}, Age: ${bookingChildAge}, Location: ${bookingLocation}`);
+      
       // Reset
       setBookingName("");
       setBookingPhone("");
@@ -428,61 +482,30 @@ export default function App() {
     setTimeout(() => {
       setIsFranchiseSubmitting(false);
       setFranchiseResponse(`FRANCHISE ALLOCATION INITIALISED: Thank you for your interest in joining India's fastest-growing cognitive brain science franchise network. A franchise executive has registered your application for ${franchiseCity}, ${franchiseState} (Planned investment: ${franchiseInvestment % 100000 === 0 ? `₹${franchiseInvestment / 100000} Lakhs` : `₹${(franchiseInvestment / 100000).toFixed(1)} Lakhs`}) and will coordinate business disclosure documents on WhatsApp within 12 hours.`);
+      
+      // Log the lead
+      addCustomerLog("Franchise", franchiseName, franchisePhone, `City: ${franchiseCity}, State: ${franchiseState}, Inv: ₹${franchiseInvestment/100000}L`);
+      
       setFranchiseName("");
       setFranchisePhone("");
       setFranchiseCity("");
     }, 1100);
   };
 
-  const ADMIN_SECURE_PATH = import.meta.env.VITE_ADMIN_SECURE_PATH || "/admin";
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-  // Ref to guard against pushState re-triggering effects
-  const isUpdatingUrl = useRef(false);
-  const hasMountedRef = useRef(false);
-
-  // On mount: check if URL matches admin path and set state accordingly
-  // Also listen for browser back/forward navigation
+  // Synchronize browser URL bar when currentPage changes
   useEffect(() => {
-    const checkPathAndRoute = () => {
-      if (isUpdatingUrl.current) return;
-      const path = window.location.pathname;
-      if (path === ADMIN_SECURE_PATH) {
-        setCurrentPage((prev) => (prev !== "admin" ? "admin" : prev));
-      }
-    };
-
-    // Initial path check on mount only
-    checkPathAndRoute();
-
-    window.addEventListener("popstate", checkPathAndRoute);
-    return () => window.removeEventListener("popstate", checkPathAndRoute);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Synchronize browser URL bar when currentPage changes (one-way: state → URL)
-  useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      return;
-    }
-    
-    isUpdatingUrl.current = true;
-    
     if (currentPage === "admin") {
-      if (window.location.pathname !== ADMIN_SECURE_PATH) {
+      if (window.location.pathname.replace(/\/$/, "") !== ADMIN_SECURE_PATH.replace(/\/$/, "")) {
         window.history.pushState(null, "", ADMIN_SECURE_PATH);
       }
     } else {
-      if (window.location.pathname === ADMIN_SECURE_PATH) {
-        window.history.pushState(null, "", "/");
+      const targetHash = `/#${currentPage}`;
+      if (window.location.hash !== targetHash || window.location.pathname.replace(/\/$/, "") === ADMIN_SECURE_PATH.replace(/\/$/, "")) {
+        window.history.pushState(null, "", targetHash);
       }
     }
-    
-    // Reset guard after microtask to avoid blocking popstate
-    Promise.resolve().then(() => {
-      isUpdatingUrl.current = false;
-    });
   }, [currentPage, ADMIN_SECURE_PATH]);
 
   // Sync dynamicEvents to localStorage (skip initial mount)
@@ -515,6 +538,10 @@ export default function App() {
     setTimeout(() => {
       setIsSchoolSubmitting(false);
       setSchoolResponse(`SCHOOL SYNERGY RECORDED: A formal proposal from BrainX India has been prepared for ${schoolName}. Our educational counselor will contact ${schoolContactPerson} on ${schoolPhone} to select a date for conducting our complimentary parent seminars and intelligence mapping tests.`);
+      
+      // Log the lead
+      addCustomerLog("School", schoolContactPerson, schoolPhone, `School: ${schoolName}, City: ${schoolCity}, Strength: ${schoolStudentStrength}`);
+      
       setSchoolName("");
       setSchoolContactPerson("");
       setSchoolPhone("");
@@ -552,6 +579,10 @@ export default function App() {
 
       if (response.ok) {
         setConsultationSuccess(`RESERVATION COMMITTED: Thank you ${parentName}! Your seat for target protocol "${targetProtocol.toUpperCase()}" at our center near "${preferredLocation}" has been successfully requested. Our diagnostics scheduling department has logged this request and will reach out to you on ${whatsappNumber} within 4 business hours to complete the biometric protocols.`);
+        
+        // Log the lead
+        addCustomerLog("Consultation", parentName, whatsappNumber, `Protocol: ${targetProtocol}, Age: ${childAge}, Location: ${preferredLocation}`);
+        
         // Clear the form after successful submission
         setParentName("");
         setWhatsappNumber("");
@@ -579,7 +610,6 @@ export default function App() {
     setCurrentPage(page);
     setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    window.history.pushState(null, "", `/#${page}`);
   };
 
   return (
@@ -881,6 +911,21 @@ export default function App() {
                      Empowered 45,000+ Students & Parents India-Wide
                    </p>
                  </div>
+
+                 {/* Video Embed in Remaining Space */}
+                 <div className="pt-6 w-full max-w-[480px]">
+                   <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-xl border border-slate-200/80">
+                     <iframe 
+                       width="100%" 
+                       height="100%" 
+                       src="https://www.youtube.com/embed/19eQAc3FMlk?si=zVImzYT-zTYPc466" 
+                       title="BrainX India Video" 
+                       frameBorder="0" 
+                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                       allowFullScreen>
+                     </iframe>
+                   </div>
+                 </div>
               </div>
 
               {/* HERO RIGHT: CINEMATIC IMAGERY LAYERED WITH CALCULATOR */}
@@ -1181,7 +1226,9 @@ export default function App() {
 
                 </div>
               </div>
-            </section>            {/* PROGRAMS OVERVIEW PREVIEW */}
+            </section>
+
+            {/* PROGRAMS OVERVIEW PREVIEW */}
             <section className="max-w-7xl mx-auto px-6 md:px-12 py-24 relative">
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
                 <div>
@@ -2085,65 +2132,113 @@ export default function App() {
               </p>
             </div>
 
-            {/* THE TRANSFORMATION JOURNEY - TIMELINE */}
-            <div className="py-8">
-              <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-                 <span className="text-xs font-mono uppercase tracking-widest text-[#d97706] font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-100">Step-by-Step Path</span>
-                 <h2 className="text-3xl md:text-5xl font-display font-extrabold text-slate-900">The Transformation Journey</h2>
-                 <p className="text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto">
+            {/* THE TRANSFORMATION JOURNEY TIMELINE */}
+            <section className="bg-white py-24 border-y border-slate-200/60 relative overflow-hidden">
+              <div className="max-w-6xl mx-auto px-6 md:px-12 relative z-10">
+                
+                {/* Section Header */}
+                <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#d97706] font-extrabold bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100 shadow-sm">STEP-BY-STEP PATH</span>
+                  <h2 className="text-3xl md:text-5xl font-display font-black text-slate-900 tracking-tight">The Transformation Journey</h2>
+                  <p className="text-sm md:text-base text-slate-600 max-w-2xl mx-auto">
                     How we guide children from digital distraction to absolute cognitive sovereignty.
-                 </p>
+                  </p>
+                </div>
+
+                {/* Vertical Timeline Layout */}
+                <div className="relative">
+                  {/* Center Line (Hidden on very small screens, visible md and up) */}
+                  <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 bg-slate-100 -translate-x-1/2 rounded-full"></div>
+
+                  <div className="space-y-16 md:space-y-24">
+                    
+                    {/* PHASE 01 */}
+                    <div className="relative flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 group">
+                      {/* Timeline Node (Center point) */}
+                      <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white border-4 border-indigo-500 rounded-full z-20 shadow-md group-hover:scale-125 transition-transform duration-300"></div>
+                      
+                      {/* Left: Image */}
+                      <div className="w-full md:w-1/2 flex justify-end">
+                        <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-indigo-500/20 transition-all duration-500 relative">
+                          <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                          <img src={journey1Img} alt="Phase 1: Biometric Discovery" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                        </div>
+                      </div>
+                      
+                      {/* Right: Text */}
+                      <div className="w-full md:w-1/2 space-y-4 md:pl-8">
+                        <span className="text-xs font-mono font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">PHASE 01</span>
+                        <h3 className="text-2xl md:text-3xl font-bold text-slate-900">The Biometric Discovery</h3>
+                        <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                          We conduct a non-invasive DMIT scan to map the child's core neurological baseline and learning style.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* PHASE 02 */}
+                    <div className="relative flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-16 group">
+                      <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white border-4 border-violet-500 rounded-full z-20 shadow-md group-hover:scale-125 transition-transform duration-300"></div>
+                      
+                      <div className="w-full md:w-1/2 flex justify-start">
+                        <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-violet-500/20 transition-all duration-500 relative">
+                          <div className="absolute inset-0 bg-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                          <img src={journey2Img} alt="Phase 2: Cognitive Alignment" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                        </div>
+                      </div>
+                      
+                      <div className="w-full md:w-1/2 space-y-4 md:pr-8 md:text-right">
+                        <span className="text-xs font-mono font-black text-violet-600 uppercase tracking-widest bg-violet-50 px-3 py-1 rounded-full border border-violet-100 inline-block">PHASE 02</span>
+                        <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Cognitive Alignment</h3>
+                        <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                          A pediatric counselor decodes the profile, giving parents actionable insights to align education and mindset coaching.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* PHASE 03 */}
+                    <div className="relative flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 group">
+                      <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white border-4 border-emerald-500 rounded-full z-20 shadow-md group-hover:scale-125 transition-transform duration-300"></div>
+                      
+                      <div className="w-full md:w-1/2 flex justify-end">
+                        <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-emerald-500/20 transition-all duration-500 relative">
+                          <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                          <img src={journey3Img} alt="Phase 3: Brain Ignition" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                        </div>
+                      </div>
+                      
+                      <div className="w-full md:w-1/2 space-y-4 md:pl-8">
+                        <span className="text-xs font-mono font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">PHASE 03</span>
+                        <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Brain Ignition</h3>
+                        <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                          Interactive sensory labs shift the child into calm alpha-wave states, restoring focus and photographic memory.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* PHASE 04 */}
+                    <div className="relative flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-16 group">
+                      <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white border-4 border-[#d97706] rounded-full z-20 shadow-md group-hover:scale-125 transition-transform duration-300"></div>
+                      
+                      <div className="w-full md:w-1/2 flex justify-start">
+                        <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-amber-500/20 transition-all duration-500 relative">
+                          <div className="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                          <img src={journey4Img} alt="Phase 4: The Sovereign Student" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                        </div>
+                      </div>
+                      
+                      <div className="w-full md:w-1/2 space-y-4 md:pr-8 md:text-right">
+                        <span className="text-xs font-mono font-black text-[#d97706] uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-100 inline-block">PHASE 04</span>
+                        <h3 className="text-2xl md:text-3xl font-bold text-slate-900">The Sovereign Student</h3>
+                        <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                          The child operates with high moral integrity, zero digital dependency, and absolute neural sovereignty.
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
               </div>
-
-              <div className="relative max-w-3xl mx-auto">
-                {/* Vertical Line */}
-                <div className="absolute top-0 bottom-0 left-8 md:left-1/2 w-1 bg-gradient-to-b from-indigo-200 via-violet-200 to-transparent -translate-x-1/2 rounded-full"></div>
-
-                {/* Step 1 */}
-                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between mb-12 group">
-                  <div className="md:w-5/12 pl-20 md:pl-0 md:text-right md:pr-12 space-y-2 order-2 md:order-1 mt-2 md:mt-0">
-                    <span className="text-[10px] font-mono text-indigo-500 font-bold uppercase tracking-widest">Phase 01</span>
-                    <h4 className="text-xl font-bold text-slate-900">The Biometric Discovery</h4>
-                    <p className="text-sm text-slate-600">We conduct a non-invasive DMIT scan to map the child's exact neurological baseline and learning style.</p>
-                  </div>
-                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
-                  <div className="md:w-5/12 order-3 md:order-2"></div>
-                </div>
-
-                {/* Step 2 */}
-                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between mb-12 group">
-                  <div className="md:w-5/12 order-2 md:order-1"></div>
-                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
-                  <div className="md:w-5/12 pl-20 md:pl-12 space-y-2 order-3 md:order-2 mt-2 md:mt-0">
-                    <span className="text-[10px] font-mono text-violet-500 font-bold uppercase tracking-widest">Phase 02</span>
-                    <h4 className="text-xl font-bold text-slate-900">Cognitive Alignment</h4>
-                    <p className="text-sm text-slate-600">A pediatric counselor decodes the profile, giving parents actionable insights to avert friction and match coaching styles.</p>
-                  </div>
-                </div>
-
-                {/* Step 3 */}
-                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between mb-12 group">
-                  <div className="md:w-5/12 pl-20 md:pl-0 md:text-right md:pr-12 space-y-2 order-2 md:order-1 mt-2 md:mt-0">
-                    <span className="text-[10px] font-mono text-emerald-500 font-bold uppercase tracking-widest">Phase 03</span>
-                    <h4 className="text-xl font-bold text-slate-900">Brain Ignition</h4>
-                    <p className="text-sm text-slate-600">Interactive sensory labs shift the child into calm Alpha-wave states, restoring focus and photographic memory.</p>
-                  </div>
-                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
-                  <div className="md:w-5/12 order-3 md:order-2"></div>
-                </div>
-
-                {/* Step 4 */}
-                <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between group">
-                  <div className="md:w-5/12 order-2 md:order-1"></div>
-                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-4 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] z-10 group-hover:scale-125 transition-transform duration-300"></div>
-                  <div className="md:w-5/12 pl-20 md:pl-12 space-y-2 order-3 md:order-2 mt-2 md:mt-0">
-                    <span className="text-[10px] font-mono text-amber-500 font-bold uppercase tracking-widest">Phase 04</span>
-                    <h4 className="text-xl font-bold text-slate-900">The Sovereign Student</h4>
-                    <p className="text-sm text-slate-600">The child operates with high moral integrity, zero digital dependency, and absolute neural sovereignty.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </section>
 
             {/* Testimonials loop */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -3062,6 +3157,8 @@ export default function App() {
               setDynamicEvents={setDynamicEvents}
               extraCaseFiles={extraCaseFiles}
               setExtraCaseFiles={setExtraCaseFiles}
+              customerLogs={customerLogs}
+              setCustomerLogs={setCustomerLogs}
               onLogout={() => {
                 setIsAdminLoggedIn(false);
                 sessionStorage.removeItem("admin_token");
