@@ -145,31 +145,81 @@ export default function AdminPanel({
 
   React.useEffect(() => {
     if (adminTab === "analytics") {
-      fetch(`${API_BASE_URL}/api/admin/analytics`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success && data.logs) {
-            // Merge with local logs, prioritizing local logs by preventing duplicates
-            setCustomerLogs(prev => {
-              const localLogMap = new Map(prev.map(l => [l.id, l]));
+      const fetchAnalytics = async () => {
+        try {
+          const csvUrl = "https://docs.google.com/spreadsheets/d/1_sTHRM4kq3_Z25u_kW4DiOKiWU6JWo52Qv39wuApu3c/export?format=csv";
+          const response = await fetch(csvUrl);
+          if (!response.ok) throw new Error("Failed to fetch CSV");
+          
+          const csvText = await response.text();
+          const lines = csvText.split("\n");
+          const fetchedLogs: any[] = [];
+          
+          for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            
+            const cols = line.split(",");
+            if (cols.length >= 6) {
+              const parentName = (cols[0] || "").trim();
+              const phone = (cols[1] || "").trim();
+              const protocol = (cols[2] || "Consultation").trim() || "Consultation";
+              const age = (cols[3] || "").trim();
+              const location = (cols[4] || "").trim();
+              let timestamp = (cols[5] || "").trim();
               
-              // Google Sheet logs might overlap if we don't have perfect IDs.
-              // Since sheet IDs are `sheet_X` and local IDs are `lead_Y`, we can just prepend.
-              // But wait, to avoid endless duplication on tab switch, let's filter out old `sheet_X` logs from prev first.
-              const prevWithoutSheets = prev.filter(l => !l.id.startsWith("sheet_"));
+              if (!parentName && !phone && !timestamp) continue;
               
-              const merged = [...prevWithoutSheets, ...data.logs];
+              let isoDate = new Date().toISOString();
+              try {
+                if (timestamp) {
+                   const nativeDate = new Date(timestamp);
+                   if (!isNaN(nativeDate.getTime())) {
+                       isoDate = nativeDate.toISOString();
+                   } else {
+                       const parts = timestamp.split(" ");
+                       if (parts.length >= 1) {
+                          const dateParts = parts[0].split("/");
+                          if (dateParts.length === 3) {
+                             const d = parseInt(dateParts[0]);
+                             const m = parseInt(dateParts[1]);
+                             const y = parseInt(dateParts[2]);
+                             if (y > 2000) {
+                                 const timeParts = parts[1] ? parts[1].split(":") : ["00", "00", "00"];
+                                 isoDate = new Date(y, m-1, d, parseInt(timeParts[0]||"0"), parseInt(timeParts[1]||"0"), parseInt(timeParts[2]||"0")).toISOString();
+                             }
+                          }
+                       }
+                   }
+                }
+              } catch(e) {}
               
-              // Sort by date descending
-              merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-              
-              return merged;
-            });
+              fetchedLogs.push({
+                id: `sheet_${i}`,
+                type: protocol.toLowerCase().includes("midbrain") || protocol.toLowerCase().includes("dmit") ? "Consultation" : "Consultation",
+                name: parentName || "Unknown",
+                phone: phone,
+                date: isoDate,
+                extraDetails: `Protocol: ${protocol}, Age: ${age}, Location: ${location}`,
+                isFromSheet: true
+              });
+            }
           }
-        })
-        .catch(err => console.error("Failed to fetch sheets analytics:", err));
+
+          setCustomerLogs(prev => {
+            const prevWithoutSheets = prev.filter(l => !l.id.startsWith("sheet_"));
+            const merged = [...prevWithoutSheets, ...fetchedLogs];
+            merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            return merged;
+          });
+        } catch (err) {
+          console.error("Failed to fetch sheets analytics:", err);
+        }
+      };
+      
+      fetchAnalytics();
     }
-  }, [adminTab, API_BASE_URL, setCustomerLogs]);
+  }, [adminTab, setCustomerLogs]);
 
   const generateAISummary = async (titleToUse?: string) => {
     const title = titleToUse !== undefined ? titleToUse : newEvent.title;
