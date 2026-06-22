@@ -708,6 +708,13 @@ export default function App() {
               >
                 Gallery
               </button>
+              <button 
+                type="button" 
+                onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })} 
+                className={`py-1 hover:text-indigo-600 transition-all cursor-pointer`}
+              >
+                Contact
+              </button>
               {isAdminLoggedIn && (
                 <button type="button" onClick={() => handlePageChange("admin" as any)} className="py-1 hover:text-rose-600 transition-all cursor-pointer text-rose-500 font-bold">
                   Admin
@@ -770,7 +777,7 @@ export default function App() {
               <button type="button" onClick={() => handlePageChange("stories")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "stories" ? "text-indigo-600" : ""}`}>Impact</button>
               <button type="button" onClick={() => handlePageChange("resources")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "resources" ? "text-indigo-600" : ""}`}>Resources & Q&A</button>
               <button type="button" onClick={() => handlePageChange("gallery")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "gallery" ? "text-indigo-600" : ""}`}>Gallery</button>
-              <button type="button" onClick={() => handlePageChange("contact")} className={`text-left hover:text-indigo-600 transition-colors ${currentPage === "contact" ? "text-indigo-600" : ""}`}>Contact</button>
+              <button type="button" onClick={() => { setIsMobileMenuOpen(false); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }} className="text-left hover:text-indigo-600 transition-colors">Contact</button>
               {isAdminLoggedIn && (
                 <button type="button" onClick={() => handlePageChange("admin" as any)} className="text-left text-rose-500 hover:text-rose-600 transition-colors">Admin</button>
               )}
