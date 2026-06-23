@@ -5,7 +5,26 @@
   force = true
 
 [[redirects]]
+  from = "http://www.brainxindia.com/*"
+  to = "https://brainxindia.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.brainxpune1.netlify.app/*"
+  to = "https://brainxpune1.netlify.app/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.brainxpune1.netlify.app/*"
+  to = "https://brainxpune1.netlify.app/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
 

@@ -41,7 +41,7 @@ import { PROGRAMS, TESTIMONIALS, SEO_POSTS, BRAND_ASSETS, STATISTICS } from "./d
 // @ts-ignore
 import logoImage from "./assets/images/brainx_logo_1780642057674.jpg";
 // @ts-ignore
-import brenixImg from "./assets/images/brenix.png";
+import brenixImg from "./assets/images/brenix.jpg";
 // @ts-ignore
 import journey1Img from "./assets/images/journey-1.jpeg";
 // @ts-ignore
@@ -396,6 +396,7 @@ export default function App() {
 
   // FAQ Expand Grid Key-Value state
   const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(null);
+  const [homeFaqIndex, setHomeFaqIndex] = useState<number | null>(null);
 
   // Search blogs keyword
   const [blogKeyword, setBlogKeyword] = useState<string>("");
@@ -414,7 +415,7 @@ export default function App() {
       document.head.appendChild(link);
     }
     link.href = "/favicon.jpg";
-    document.title = "BrainX India | Preparing Minds for the AI Future";
+    document.title = "BrainX India | DMIT Test, Abacus & Midbrain Activation Pune";
 
     // 2. Loading animation progress updates
     const stages = [
@@ -627,7 +628,7 @@ export default function App() {
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-display font-bold text-slate-900 tracking-wide uppercase">BrainX India</h1>
+              <div className="text-2xl font-display font-bold text-slate-900 tracking-wide uppercase">BrainX India</div>
               <p className="text-[10px] text-indigo-600 tracking-widest uppercase font-bold">Pediatric Brain Science Portal</p>
             </div>
 
@@ -852,16 +853,15 @@ export default function App() {
                 <div className="space-y-4">
                    {/* Main Headline */}
                    <h1 className="text-4xl sm:text-6xl font-display font-black leading-[1.08] tracking-tight text-[#0f172a]">
-                     Preparing Minds <br/>
-                     for the{" "}
+                     BrainX India – <br/>
                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-905">
-                       AI Future.
+                       DMIT Test, Midbrain Activation & Abacus Classes in Pune
                      </span>
                    </h1>
 
                    {/* Subtitle Body Description */}
                    <p className="text-sm sm:text-base text-[#475569] leading-relaxed max-w-xl">
-                     Traditional schools train youth for repetitive roles. We build robust <span className="text-[#0f172a] font-bold underline decoration-indigo-500 decoration-2 underline-offset-2">cognitive sovereignty</span>. Our systems protect child focus buffers, isolate biological learning traits, and align developmental paths with deep moral family values.
+                     Traditional schools train youth for repetitive roles. At <span className="text-[#0f172a] font-bold">BrainX India</span>, we are <span className="text-[#0f172a] font-bold">preparing minds</span> to thrive in the <span className="text-[#0f172a] font-bold">AI future</span> by building robust <span className="text-[#0f172a] font-bold underline decoration-indigo-500 decoration-2 underline-offset-2">cognitive sovereignty</span>. Our systems protect child focus buffers, isolate biological learning traits, and align developmental paths with deep moral family values.
                    </p>
                  </div>
 
@@ -933,7 +933,7 @@ export default function App() {
                 
                 {/* 1. Cinematic Hero Photography */}
                 <div className="w-full relative rounded-3xl overflow-hidden border border-slate-200/85 shadow-2xl hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-500 group">
-                  <img src="/images/hero_image_1781776606478.png" alt="Confident Child with Neuro-Headset" className="w-full aspect-[4/3] md:aspect-[4/3.5] object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out" />
+                  <img src="/images/hero_image_1781776606478.png" fetchPriority="high" alt="Confident Child with Neuro-Headset" className="w-full aspect-[4/3] md:aspect-[4/3.5] object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out" />
                   
                   {/* Tech overlay scanner tags */}
                   <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-indigo-900/80 backdrop-blur-md border border-indigo-500/30 text-[9px] text-indigo-100 font-mono font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
@@ -1169,6 +1169,7 @@ export default function App() {
                         alt="Child overstimulated by a screen in background" 
                         className="w-full h-48 object-cover opacity-80 group-hover:scale-105 transition-transform duration-550"
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                       />
                       <div className="absolute bottom-4 left-4 z-20">
                         <span className="text-[9px] font-mono bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded font-extrabold uppercase tracking-widest">&bull; THE THREAT</span>
@@ -1183,6 +1184,7 @@ export default function App() {
                         alt="Indian mother supporting daughter study happily" 
                         className="w-full h-80 object-cover opacity-95 group-hover:scale-105 transition-transform duration-550"
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                       />
                       <div className="absolute bottom-5 left-5 z-20">
                         <span className="text-[9px] font-mono bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded font-extrabold uppercase tracking-widest">&bull; THE BRAINX ANSWER</span>
@@ -1265,6 +1267,7 @@ export default function App() {
                             alt={p.title} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             referrerPolicy="no-referrer"
+                            loading="lazy"
                           />
                         </div>
 
@@ -1491,6 +1494,203 @@ export default function App() {
                 </div>
               </div>
             </section>
+
+            {/* SEO OPTIMIZED PUNE EDUCATION CORE DIRECTORY SECTION */}
+            <section id="pune-seo-core-directory" className="max-w-6xl mx-auto px-6 md:px-12 py-16 mt-12 bg-white/70 backdrop-blur-md border border-slate-200/80 rounded-3xl space-y-12 shadow-sm">
+              <div className="space-y-4 text-center max-w-3xl mx-auto">
+                <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max mx-auto block">
+                  Pune Educational Directory
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-display font-black text-slate-900 tracking-tight">
+                  Comprehensive Cognitive Development Services in Pune
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-sans">
+                  BrainX India is the standard-bearer for advanced pediatric brain science, scientific biometrics, and mental math training in Pune, Maharashtra. Explore our key disciplines and custom developmental tracks.
+                </p>
+              </div>
+
+              {/* Service Cards Grid - 2 Column for detailed text */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                {/* DMIT Test Pune */}
+                <div id="seo-dmit" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
+                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-650"></span>
+                    DMIT Test Pune
+                  </h3>
+                  <div className="text-xs sm:text-sm text-slate-600 leading-relaxed space-y-3 font-sans">
+                    <p>
+                      Are you seeking a premium, scientifically verified <strong>DMIT Test in Pune</strong>? BrainX India is Pune's leading center for Dermatoglyphics Multiple Intelligence Test (DMIT) diagnostics. Dermatoglyphics is the study of fingertip dermal ridge patterns, which develop in the womb concurrently with the child's brain neocortex.
+                    </p>
+                    <p>
+                      At our Pune diagnostic centers, we capture high-definition fingertip ridge maps. These are analyzed mathematically to generate a comprehensive 34-page neurological dossier that outlines your child's innate potential. Rather than relying on trial-and-error, our certified biometrics counselors isolate your child's prime intelligence quadrants (IQ, EQ, CQ, and AQ) based on Howard Gardner's theory of multiple intelligences.
+                    </p>
+                    <p>
+                      Whether your child is a visual, auditory, or kinesthetic learner, our analysis helps parents adapt their coaching styles and select future career paths aligned with biological learning traits. Visit our <a href="#programs" onClick={() => handlePageChange("programs")} className="text-indigo-600 font-bold hover:underline">biometric academy</a> to reserve your diagnostic slot today.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Midbrain Activation Pune */}
+                <div id="seo-midbrain" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
+                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-violet-650"></span>
+                    Midbrain Activation Pune
+                  </h3>
+                  <div className="text-xs sm:text-sm text-slate-600 leading-relaxed space-y-3 font-sans">
+                    <p>
+                      Our specialized <strong>Midbrain Activation in Pune</strong> (also known as Centre Brain Ignition) is a sensory-calibration training module designed for boys and girls aged 4 to 15. The midbrain acts as a sensory bridge coordinating visual, auditory, and kinesthetic inputs.
+                    </p>
+                    <p>
+                      By employing sound-wave frequencies and alpha-wave sensory calibration, our certified trainers stimulate hemispheric synchronization, aligning the left and right lobes. This balance enhances non-visual spatial color and tracking capacities, which manifest in accelerated photographic memory, visual retention, speed-reading, and heightened concentration.
+                    </p>
+                    <p>
+                      In an era where modern digital devices flood children's minds with artificial dopamine, our Ravet-Pune activation labs provide a screen-free space where children regain natural focus and cognitive sovereignty. Discover our <a href="#about" onClick={() => handlePageChange("about")} className="text-indigo-600 font-bold hover:underline">origins and neuroscience background</a>.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Abacus Classes Pune */}
+                <div id="seo-abacus" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
+                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+                    Abacus Classes Pune
+                  </h3>
+                  <div className="text-xs sm:text-sm text-slate-600 leading-relaxed space-y-3 font-sans">
+                    <p>
+                      Searching for professional <strong>Abacus Classes in Pune</strong> to build math speed and logical reasoning? BrainX India offers structured Abacus training programs designed to convert abstract numbers into tactile, spatial visuals.
+                    </p>
+                    <p>
+                      An abacus is not just a calculation tool; it is a cognitive instrument that helps children visualize number patterns. As students slide physical beads and gradually transition to calculating mentally using an imaginary abacus, they stimulate both hemispheres of the brain. This left-to-right brain synchronization eliminates math anxiety, builds focus, and accelerates mental calculation speed.
+                    </p>
+                    <p>
+                      Beyond mathematics, Abacus training improves listening concentration, memory storage, and logical deduction. Sign up for our certified <a href="#programs" onClick={() => handlePageChange("programs")} className="text-indigo-600 font-bold hover:underline">Abacus classes in Pune</a> and help your child develop lifelong mathematical confidence.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Child Brain Development Pune */}
+                <div id="seo-development" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
+                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                    Child Brain Development Pune
+                  </h3>
+                  <div className="text-xs sm:text-sm text-slate-600 leading-relaxed space-y-3 font-sans">
+                    <p>
+                      At BrainX India, our <strong>Child Brain Development Pune</strong> programs address the root causes of screen addiction, attention deficits, and brain fatigue. We bridge biometric science with structured value-based learning to raise resilient children.
+                    </p>
+                    <p>
+                      Our curriculum integrates mental math, alpha-wave sensory training, spatial tracking, and intrapersonal diagnostics. We collaborate with over 165 elite school networks and franchise centers across Pune and pan-India to substitute forced memorization with active personal sovereignty.
+                    </p>
+                    <p>
+                      Our 4 core protocols provide a comprehensive framework that adapts to your child's age, growth rate, and biological traits. To see evidence of how our <strong>child brain development Pune</strong> curriculums transform students, view our <a href="#stories" onClick={() => handlePageChange("stories")} className="text-indigo-600 font-bold hover:underline">success stories and case profiles</a>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Parenting Workshop Pune Section */}
+              <div id="seo-parenting" className="p-6 sm:p-10 bg-indigo-50/50 border border-indigo-100 rounded-3xl space-y-4">
+                <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-pulse"></span>
+                  Parenting Workshop Pune
+                </h3>
+                <div className="text-xs sm:text-sm text-slate-600 leading-relaxed space-y-3 font-sans">
+                  <p>
+                    Modern parenting comes with digital-age challenges: hyper-stimulating screens, screen-time habits, and emotional distance. BrainX India hosts monthly interactive <strong>Parenting Workshop Pune</strong> events and focus-restoration consultation audits in Pune.
+                  </p>
+                  <p>
+                    Our certified instructors guide parents on protecting child focus buffers, setting spatial detox protocols, and aligning home environments with natural biological learning traits. We help families combine biometric diagnostics with core values, restoring harmony, mutual respect, and academic drive. Register for our upcoming <a href="#contact" onClick={() => handlePageChange("contact")} className="text-indigo-600 font-bold hover:underline">Parenting Workshop Pune</a> consultation to secure your child's cognitive future.
+                  </p>
+                </div>
+              </div>
+
+              {/* HOME PAGE FAQ ACCORDION SECTION */}
+              <div id="homepage-faq-module" className="pt-6 border-t border-slate-200/80 space-y-6">
+                <div className="space-y-1.5 text-center">
+                  <span className="text-[10px] font-mono text-[#d97706] uppercase tracking-wider font-extrabold bg-amber-50 px-2.5 py-0.5 rounded border border-amber-100 w-max mx-auto block">
+                    Q&A Directory
+                  </span>
+                  <h3 className="text-2xl font-display font-black text-slate-900">
+                    Frequently Asked Questions (FAQ)
+                  </h3>
+                </div>
+
+                <div className="max-w-3xl mx-auto space-y-3">
+                  {[
+                    {
+                      q: "What is DMIT (Dermatoglyphics Multiple Intelligence Test)?",
+                      a: "DMIT is a scientific fingerprint analysis test that maps a child's biological learning style, intelligence quadrants (IQ, EQ, CQ, AQ), and core personality traits. At BrainX India in Pune, we capture high-definition fingertip ridge maps which are analyzed using Howard Gardner's theory of multiple intelligences. This removes guesswork from your child's education and development."
+                    },
+                    {
+                      q: "What is Midbrain Activation and how does it work?",
+                      a: "Midbrain Activation is a cognitive sensory calibration program designed for children aged 4 to 15 to synchronize the left and right hemispheres of the brain. Through sound-wave frequencies and alpha-wave sensory training, we stimulate the pineal gland. This brain ignition helps children read, draw, and focus with blindfolds, leading to a surge in photographic memory, visual retention, and speed-reading capacities."
+                    },
+                    {
+                      q: "What are the key benefits of Abacus training for kids?",
+                      a: "Abacus classes Pune training converts abstract mathematical numbers into tactile spatial visualization patterns. Sliding beads on the physical abacus and calculating mentally using an imaginary abacus synchronizes left-to-right brain lobes. It accelerates mental math speed, eliminates mathematics anxiety, enhances logical deduction, and builds academic self-confidence."
+                    },
+                    {
+                      q: "Why should I choose BrainX India in Pune for my child?",
+                      a: "BrainX India is Pune's premier institute for child brain development. We combine scientific biometrics (like DMIT scans) with deep moral family values. Our specialized diagnostic labs, certified counselors, and advanced training methodology help families avoid digital screen toxicity, restore child attention buffers, and secure cognitive sovereignty for the generative AI wave."
+                    },
+                    {
+                      q: "At what age should a child undergo a DMIT test?",
+                      a: "A DMIT test in Pune can be conducted on children starting from age 2. Fingerprints develop in the womb by the 21st week of pregnancy and remain unchanged throughout life. A diagnostic scan at an early age provides a lifelong roadmap for parents to understand their child's natural learning style and career choices."
+                    },
+                    {
+                      q: "How long does the Midbrain Activation program take to show results?",
+                      a: "Our Centre Brain Ignition courses run over a structured 3-month timeline. Most parents in Pune report noticeable enhancements in child focus, listening concentration, and visual retention within the first 4 to 6 weeks of active sensory calibration labs."
+                    },
+                    {
+                      q: "Does Abacus training improve general academic performance?",
+                      a: "Yes, absolutely. Abacus classes in Pune build concentration, memory retention, and fast visual-auditory processing speed. These enhanced cognitive traits transfer directly to other academic subjects like science, languages, and general problem-solving, making students overall high achievers."
+                    },
+                    {
+                      q: "What scientific research supports DMIT and brain ignition?",
+                      a: "DMIT is backed by decades of research in dermatoglyphics, genetics, and embryology which shows fingerprint ridge density directly correlates with lobe development. Midbrain activation utilizes established principles of brain plasticity, audio-sensory calibration, and alpha-wave EEG states to retrain neural pathways and restore focus."
+                    },
+                    {
+                      q: "Are there parenting workshops available at the Pune center?",
+                      a: "Yes! BrainX India regularly hosts parenting workshops in Pune. These workshops focus on managing pediatric screen addiction, understanding biological learning traits, and integrating values education to build resilient child attention spans."
+                    },
+                    {
+                      q: "How can schools and franchise partners collaborate with BrainX India?",
+                      a: "BrainX India partners with school networks (160+ campuses in Pune) and aspiring entrepreneurs. We provide high-resolution ridge scanners, proprietary mapping systems, certified training, and parenting course materials. Schools receive annual complimentary screening camps, and franchise partners gain access to a highly profitable business model."
+                    }
+                  ].map((faq, idx) => {
+                    const isOpen = homeFaqIndex === idx;
+                    return (
+                      <div 
+                        key={idx}
+                        className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:border-slate-300 transition-colors"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setHomeFaqIndex(isOpen ? null : idx)}
+                          className="w-full px-6 py-4 flex items-center justify-between text-left focus:outline-none cursor-pointer"
+                        >
+                          <span className="text-sm font-display font-bold text-slate-800 hover:text-indigo-600 transition-colors">
+                            {faq.q}
+                          </span>
+                          <span className="text-xs font-bold text-slate-400 select-none">
+                            {isOpen ? "Collapse" : "Expand"}
+                          </span>
+                        </button>
+                        <div 
+                          className={`transition-all duration-350 ease-in-out px-6 ${
+                            isOpen ? "max-h-[300px] pb-5 opacity-100 border-t border-slate-100 pt-4" : "max-h-0 opacity-0 overflow-hidden"
+                          }`}
+                        >
+                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                            {faq.a}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
           </div>
         )}
 
@@ -1502,9 +1702,9 @@ export default function App() {
             <div id="origins-header-cols" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-6 space-y-4 text-left">
                 <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">BrainX India Origins</span>
-                <h1 className="text-4xl md:text-6xl font-display font-black text-slate-900 leading-tight">Redesigning Intelligence & Ethics.</h1>
+                <h2 className="text-4xl md:text-6xl font-display font-black text-slate-900 leading-tight">Redesigning Intelligence & Ethics.</h2>
                 <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-sans">
-                  We believe that education must prioritize spatial, logical, musical, and intrapersonal intelligences alongside critical moral systems. Our goal is to align childhood developmental paths with scientific biology.
+                  We are <span className="font-bold text-[#0f172a]">redesigning intelligence & ethics</span> in education. We believe that learning must prioritize spatial, logical, musical, and intrapersonal intelligences alongside critical moral systems. Our goal is to align childhood developmental paths with scientific biology.
                 </p>
                 <p className="text-xs text-slate-605 leading-relaxed font-sans">
                   By equipping franchise partners and over 165 school networks with advanced biometrics, we completely remove the toxic classroom standard of force-memorization, substituting it with deep personal development.
@@ -1519,6 +1719,7 @@ export default function App() {
                   alt="Inclusive Indian classroom group learning session" 
                   className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
                 <div className="absolute bottom-5 left-5 z-20">
                   <span className="text-[9px] font-mono bg-indigo-600/90 text-white px-2 py-1 rounded font-extrabold uppercase">&bull; NATIONAL PEDAGOGY LEVEL</span>
@@ -1687,9 +1888,9 @@ export default function App() {
             
             <div className="space-y-3 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">BrainX India Academies</span>
-              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Our 4 Core Protocols.</h1>
+              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Our 4 Core Protocols.</h2>
               <p className="text-sm sm:text-base text-slate-705">
-                Click down to explore biological metrics, stage-by-stage timelines, and customized parenting baselines.
+                We have structured our curriculum into <span className="font-bold text-[#0f172a]">4 core protocols</span>. Click below to explore biological metrics, stage-by-stage timelines, and customized parenting baselines.
               </p>
             </div>
 
@@ -1862,9 +2063,9 @@ export default function App() {
             {/* Header branding copy */}
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-605 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">Synergies & Franchises</span>
-              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Join the Intelligence Revolution.</h1>
+              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Join the Intelligence Revolution.</h2>
               <p className="text-base sm:text-lg text-slate-650 leading-relaxed">
-                Whether you are an aspiring entrepreneur seeking a high-return brain-science franchise, or an elite school administrator looking to secure your student population in Pune or pan-India, we have custom collaboration paths.
+                We invite you to <span className="font-bold text-[#0f172a]">join the intelligence revolution</span>. Whether you are an aspiring entrepreneur seeking a high-return brain-science franchise, or an elite school administrator looking to secure your student population in Pune or pan-India, we have custom collaboration paths.
               </p>
             </div>
 
@@ -2126,9 +2327,9 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max">Clinical Evidence Validation</span>
-              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Transformed Childhoods.</h1>
+              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Transformed Childhoods.</h2>
               <p className="text-base sm:text-lg text-slate-650 leading-relaxed">
-                Review case profile progressions from active screen reliance to peak intellectual and moral focus, recorded across Pune and our pan-India network:
+                See how we have enabled <span className="font-bold text-[#0f172a]">transformed childhoods</span>. Review case profile progressions from active screen reliance to peak intellectual and moral focus, recorded across Pune and our pan-India network:
               </p>
             </div>
 
@@ -2161,7 +2362,7 @@ export default function App() {
                       <div className="w-full md:w-1/2 flex justify-end">
                         <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-indigo-500/20 transition-all duration-500 relative">
                           <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                          <img src={journey1Img} alt="Phase 1: Biometric Discovery" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={journey1Img} alt="Phase 1: Biometric Discovery" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                         </div>
                       </div>
                       
@@ -2182,7 +2383,7 @@ export default function App() {
                       <div className="w-full md:w-1/2 flex justify-start">
                         <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-violet-500/20 transition-all duration-500 relative">
                           <div className="absolute inset-0 bg-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                          <img src={journey2Img} alt="Phase 2: Cognitive Alignment" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={journey2Img} alt="Phase 2: Cognitive Alignment" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                         </div>
                       </div>
                       
@@ -2202,7 +2403,7 @@ export default function App() {
                       <div className="w-full md:w-1/2 flex justify-end">
                         <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-emerald-500/20 transition-all duration-500 relative">
                           <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                          <img src={journey3Img} alt="Phase 3: Brain Ignition" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={journey3Img} alt="Phase 3: Brain Ignition" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                         </div>
                       </div>
                       
@@ -2222,7 +2423,7 @@ export default function App() {
                       <div className="w-full md:w-1/2 flex justify-start">
                         <div className="w-full max-w-md rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg group-hover:shadow-amber-500/20 transition-all duration-500 relative">
                           <div className="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                          <img src={journey4Img} alt="Phase 4: The Sovereign Student" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={journey4Img} alt="Phase 4: The Sovereign Student" className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                         </div>
                       </div>
                       
@@ -2628,9 +2829,9 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max">Blogs & Publications Hub</span>
-              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Knowledge for AI-Era Parents.</h1>
+              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Knowledge for AI-Era Parents.</h2>
               <p className="text-sm text-slate-705">
-                Explore developmental science, screens detox research, and customized Multiple Intelligence strategies.
+                We share essential <span className="font-bold text-[#0f172a]">knowledge for AI-era parents</span>. Explore developmental science, screens detox research, and customized Multiple Intelligence strategies.
               </p>
             </div>
 
@@ -2739,9 +2940,9 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max">Interactive Activity Logs</span>
-              <h1 className="text-4xl md:text-6xl font-display font-black text-slate-900 font-extrabold">Life Inside BrainX India.</h1>
+              <h2 className="text-4xl md:text-6xl font-display font-black text-slate-900 font-extrabold">Life Inside BrainX India.</h2>
               <p className="text-base sm:text-lg text-slate-705 leading-relaxed">
-                Explore real interactive illustrations of our diagnostic sessions, multiple intelligence scans, parent de-escalation seminars, and certified student bootcamps conducted across Pune and pan-India franchise corridors:
+                Get a glimpse of <span className="font-bold text-[#0f172a]">life inside BrainX India</span>. Explore real interactive illustrations of our diagnostic sessions, multiple intelligence scans, parent de-escalation seminars, and certified student bootcamps conducted across Pune and pan-India franchise corridors:
               </p>
             </div>
 
@@ -2757,6 +2958,7 @@ export default function App() {
                     alt="Biometric Ridge Scanner" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <span className="absolute top-4 left-4 z-20 text-[8px] font-mono font-bold uppercase bg-slate-900/80 text-white px-2 py-0.5 rounded">
                     Pune Central Lab
@@ -2780,6 +2982,7 @@ export default function App() {
                     alt="Focused sensory activities" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <span className="absolute top-4 left-4 z-20 text-[8px] font-mono font-bold uppercase bg-slate-900/80 text-white px-2 py-0.5 rounded">
                     Ravet Academy
@@ -2803,6 +3006,7 @@ export default function App() {
                     alt="Parent seminar" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <span className="absolute top-4 left-4 z-20 text-[8px] font-mono font-bold uppercase bg-slate-900/80 text-white px-2 py-0.5 rounded">
                     Auditorium Live
@@ -2826,6 +3030,7 @@ export default function App() {
                     alt="School student camp" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <span className="absolute top-4 left-4 z-20 text-[8px] font-mono font-bold uppercase bg-slate-900/80 text-white px-2 py-0.5 rounded">
                     Diagnostic camp
@@ -2849,6 +3054,7 @@ export default function App() {
                     alt="Teacher training" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <span className="absolute top-4 left-4 z-20 text-[8px] font-mono font-bold uppercase bg-slate-900/80 text-white px-2 py-0.5 rounded">
                     Syllabus Workshop
@@ -2872,6 +3078,7 @@ export default function App() {
                     alt="Family diagnostic counseling" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <span className="absolute top-4 left-4 z-20 text-[8px] font-mono font-bold uppercase bg-slate-900/80 text-white px-2 py-0.5 rounded">
                     Clinical Space
@@ -2897,9 +3104,9 @@ export default function App() {
             
             <div className="space-y-4 max-w-3xl">
               <span className="text-xs font-mono text-indigo-600 uppercase tracking-widest font-bold bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full w-max block">Reach Our Offices</span>
-              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Contact & Consultation.</h1>
+              <h2 className="text-4xl md:text-6xl font-display font-extrabold text-slate-900">Contact & Consultation.</h2>
               <p className="text-base sm:text-lg text-slate-705 leading-relaxed">
-                Gain instant clarity. Fill parent details below to reserve your complimentary counseling session, or visit our support channels directly.
+                We invite you to reach out for <span className="font-bold text-[#0f172a]">contact & consultation</span>. Gain instant clarity by filling in parent details below to reserve your complimentary counseling session, or visit our support channels directly.
               </p>
             </div>
 
