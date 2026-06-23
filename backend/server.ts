@@ -55,10 +55,29 @@ async function startServer() {
   // Admin Login Verification Endpoint
   app.post("/api/admin/login", (req, res) => {
     const { password } = req.body;
+    
     const adminPassword = process.env.ADMIN_PASSWORD || "brainx@admin2026";
-    if (password === adminPassword) {
+    const adminKey = process.env.ADMIN_KEY;
+    const viteAdminPassword = process.env.VITE_ADMIN_PASSWORD;
+    const jwtSecret = process.env.JWT_SECRET;
+    const authSecret = process.env.AUTH_SECRET;
+
+    const validPasswords = [
+      adminPassword,
+      adminKey,
+      viteAdminPassword,
+      jwtSecret,
+      authSecret
+    ].filter(Boolean);
+
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    console.log(`[Admin Auth] Login attempt received from IP: ${ip}`);
+
+    if (password && validPasswords.includes(password.trim())) {
+      console.log(`[Admin Auth] Authentication successful for IP: ${ip}`);
       return res.json({ success: true, token: "session_token_brainx_admin_secure_gate_9281" });
     } else {
+      console.warn(`[Admin Auth] Authentication failed for IP: ${ip}. Invalid credentials.`);
       return res.status(401).json({ success: false, error: "Invalid password credentials." });
     }
   });

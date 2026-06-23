@@ -7,3 +7,5 @@ coverage/
 .env
 .env.local
 .env.*.local
+backend/server.js
+backend/server.js.map
