@@ -126,11 +126,12 @@ export default function AdminLogin({ onLoginSuccess, onCancel }: AdminLoginProps
           )}
 
           <div className="space-y-2 relative">
-            <label className="text-[10px] font-mono text-slate-500 uppercase font-bold tracking-wider block">
+            <label htmlFor="admin-key" className="text-[10px] font-mono text-slate-500 uppercase font-bold tracking-wider block">
               Enter Administrative Key
             </label>
             <div className="relative">
               <input
+                id="admin-key"
                 type={showPassword ? "text" : "password"}
                 required
                 value={password}
@@ -143,6 +144,7 @@ export default function AdminLogin({ onLoginSuccess, onCancel }: AdminLoginProps
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isSubmitting}
+                aria-label={showPassword ? "Hide administrative key text" : "Show administrative key text"}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 p-1.5 rounded-lg transition-colors cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

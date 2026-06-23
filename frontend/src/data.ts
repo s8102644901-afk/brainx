@@ -41,7 +41,7 @@ export const PROGRAMS: Program[] = [
     duration: "1 Biometric Mapping Scan + 2-Hour Pediatric Counselor Consultation",
     cognitiveDominance: "Prefrontal Leadership Index, Left-vs-Right Hemisphere Coherence Index.",
     colorTheme: "cyan",
-    bannerImage: "/images/program_dmit_1781776619206.png",
+    bannerImage: "/images/program_dmit_1781776619206.webp",
     metrics: ["Lobe Density Strengths", "Inborn Talent Propensities", "Visual vs Auditory vs Kinesthetic (VAK) Ratio", "Creative vs Logical Hemisphere Dominance"],
     benefits: [
       "No more academic guesswork: Align secondary coaching classes with their biological sensory input type.",
@@ -74,7 +74,7 @@ export const PROGRAMS: Program[] = [
     duration: "12-Week Interactive Lab Series (Interactive Cohorts)",
     cognitiveDominance: "Instant Alpha Wave Transition, Visual Spatial Tracking Velocity.",
     colorTheme: "violet",
-    bannerImage: "/images/program_centre_1781776635602.png",
+    bannerImage: "/images/program_centre_1781776635602.webp",
     metrics: ["Alpha-Wave Output Coherence", "Peripheral Tracking Width", "Non-Visual Color Synthesis Rate", "Focus Recovery Speed"],
     benefits: [
       "Restore shattered focus: Transition from digital hyper-activation to deep concentration within 90 seconds.",
@@ -107,7 +107,7 @@ export const PROGRAMS: Program[] = [
     duration: "3-Hour Deep-Dive Live Interactive Masterclass & Q&A",
     cognitiveDominance: "Digital Screen Defense Mechanics, High-EQ Parent-Child Alignment.",
     colorTheme: "emerald",
-    bannerImage: "/images/program_parenting_1781776649774.png",
+    bannerImage: "/images/program_parenting_1781776649774.webp",
     metrics: ["Digital Toxicity Baseline", "Home Acoustic Haven Score", "EQ Communication Index", "Screen-to-Active Ratio"],
     benefits: [
       "Digital Addiction & Screen Time: Counter excessive use of smartphones, tablets, gaming, and social media while establishing sleep-safe routines.",
@@ -141,7 +141,7 @@ export const PROGRAMS: Program[] = [
     duration: "6-Month Integrated Ethics & Focus Syllabus",
     cognitiveDominance: "Empathy Quotient (EQ), Adversity Quotient (AQ), Ethical Decision Velocity.",
     colorTheme: "amber",
-    bannerImage: "/images/program_value_1781776663397.png",
+    bannerImage: "/images/program_value_1781776663397.webp",
     metrics: ["Moral Judgment Index", "Integrity Coefficient Score", "Adversity Quotient Rating", "Interpersonal Communication Comfort"],
     benefits: [
       "Builds Strong Character: Fosters internal integrity, self-discipline, and deep respect for elders and teachers.",

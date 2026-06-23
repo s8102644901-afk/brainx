@@ -144,7 +144,7 @@ Would you like to book a complimentary 1-on-1 parenting consultation at one of o
 
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-mono text-slate-550 mb-2 uppercase tracking-wide font-bold">
+              <label htmlFor="child-age-selector" className="block text-[10px] font-mono text-slate-550 mb-2 uppercase tracking-wide font-bold">
                 Target Child Development Age
               </label>
               <select
@@ -290,12 +290,14 @@ Would you like to book a complimentary 1-on-1 parenting consultation at one of o
             onChange={(e) => setInputMessage(e.target.value)}
             disabled={isConsulting}
             placeholder="Ask about screen overstimulation, DMIT mapping, family values..."
+            aria-label="Parenting Advisor Message Input"
             className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 placeholder-slate-400 font-sans focus:outline-none focus:border-indigo-400 cursor-text transition-all disabled:opacity-50 shadow-sm"
           />
           <button
             id="chat-advisory-submit"
             type="submit"
             disabled={!inputMessage.trim() || isConsulting}
+            aria-label="Send message to parenting assistant"
             className="p-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-550 transition-all disabled:opacity-30 disabled:hover:shadow-none flex items-center justify-center h-11 w-11 shrink-0 cursor-pointer shadow-sm hover:scale-[1.01]"
           >
             <Send className="w-4 h-4" />

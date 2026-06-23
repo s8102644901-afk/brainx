@@ -240,6 +240,7 @@ export default function BiometricInteractiveDashboard() {
                     max="100"
                     value={ratings[f.key]}
                     readOnly
+                    aria-label={`${f.label} percentage score`}
                     className="w-full h-1 bg-slate-200 rounded accent-indigo-600 pointer-events-none cursor-default"
                   />
                   

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, FormEvent } from "react";
+import { useState, useEffect, useRef, useCallback, FormEvent, lazy, Suspense } from "react";
 import { 
   Dna, 
   Brain, 
@@ -39,23 +39,22 @@ import {
 } from "lucide-react";
 import { PROGRAMS, TESTIMONIALS, SEO_POSTS, BRAND_ASSETS, STATISTICS } from "./data";
 // @ts-ignore
-import logoImage from "./assets/images/brainx_logo_1780642057674.jpg";
+import logoImage from "./assets/images/brainx_logo_1780642057674.webp";
 // @ts-ignore
-import brenixImg from "./assets/images/brenix.jpg";
+import brenixImg from "./assets/images/brenix.webp";
 // @ts-ignore
-import journey1Img from "./assets/images/journey-1.jpeg";
+import journey1Img from "./assets/images/journey-1.webp";
 // @ts-ignore
-import journey2Img from "./assets/images/journey-2.jpeg";
+import journey2Img from "./assets/images/journey-2.webp";
 // @ts-ignore
-import journey3Img from "./assets/images/journey-3.jpeg";
+import journey3Img from "./assets/images/journey-3.webp";
 // @ts-ignore
-import journey4Img from "./assets/images/journey-4.jpeg";
-import AetheriaAssistant from "./components/AetheriaAssistant";
-import CinematicBackground from "./components/CinematicBackground";
-import BrainHologram from "./components/BrainHologram";
-import BiometricInteractiveDashboard from "./components/BiometricInteractiveDashboard";
-import AdminLogin from "./components/AdminLogin";
-import AdminPanel from "./components/AdminPanel";
+import journey4Img from "./assets/images/journey-4.webp";
+const AetheriaAssistant = lazy(() => import("./components/AetheriaAssistant"));
+const CinematicBackground = lazy(() => import("./components/CinematicBackground"));
+const BiometricInteractiveDashboard = lazy(() => import("./components/BiometricInteractiveDashboard"));
+const AdminLogin = lazy(() => import("./components/AdminLogin"));
+const AdminPanel = lazy(() => import("./components/AdminPanel"));
 
 
 const getProgramPrice = (id: string) => {
@@ -414,7 +413,7 @@ export default function App() {
       link.rel = "icon";
       document.head.appendChild(link);
     }
-    link.href = "/favicon.jpg";
+    link.href = "/favicon.webp";
     document.title = "BrainX India | DMIT Test, Abacus & Midbrain Activation Pune";
 
     // 2. Loading animation progress updates
@@ -618,7 +617,7 @@ export default function App() {
       
       {/* Preloader boot sequence */}
       {systemBooting && (
-        <div className="fixed inset-0 z-[100] bg-[#F8FAFC] flex flex-col items-center justify-center font-mono text-xs text-slate-500 p-6 select-none">
+        <div className="fixed inset-0 z-[100] bg-[#F8FAFC] flex flex-col items-center justify-center font-mono text-xs text-slate-700 p-6 select-none">
           <div className="max-w-md w-full space-y-8 text-center animate-fadeIn">
             {/* Spinning glowing brain logo */}
             <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
@@ -640,14 +639,14 @@ export default function App() {
                   style={{ width: `${bootProgress}%` }}
                 ></div>
               </div>
-              <div className="flex justify-between text-[9px] text-slate-500 font-mono">
+              <div className="flex justify-between text-[9px] text-slate-650 font-mono">
                 <span>{bootStage}</span>
                 <span>{bootProgress}%</span>
               </div>
             </div>
 
             {/* Telemetry metadata footer */}
-            <div className="border-t border-slate-200 pt-4 text-[9px] text-slate-500 flex justify-between uppercase">
+            <div className="border-t border-slate-200 pt-4 text-[9px] text-slate-655 flex justify-between uppercase">
               <span>Biometric Node: Active</span>
               <span>Integrity: Synced</span>
             </div>
@@ -656,7 +655,11 @@ export default function App() {
       )}
 
       {/* Premium Cinematic Background System - hide on admin */}
-      {currentPage !== "admin" && <CinematicBackground />}
+      {currentPage !== "admin" && (
+        <Suspense fallback={null}>
+          <CinematicBackground />
+        </Suspense>
+      )}
 
       {currentPage !== "admin" && (
       <div id="site-header" className="fixed top-0 left-0 right-0 z-[9999] w-full">
@@ -761,6 +764,7 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="flex p-1 sm:p-1.5 hover:bg-slate-100 rounded-lg transition-all duration-350 hover:scale-105 items-center justify-center cursor-pointer"
                 title="LinkedIn Profile"
+                aria-label="BrainX India LinkedIn Page"
               >
                 <OriginalLinkedinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
@@ -770,6 +774,7 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="flex p-1 sm:p-1.5 hover:bg-slate-100 rounded-lg transition-all duration-350 hover:scale-105 items-center justify-center cursor-pointer"
                 title="BrainX Masters YouTube Channel"
+                aria-label="BrainX Masters YouTube Channel"
               >
                 <OriginalYoutubeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
@@ -818,6 +823,7 @@ export default function App() {
                   href="https://www.linkedin.com/in/sanju-nair-s-brainx-b292b4b9?utm_content=profile&utm_medium=member_android&utm_source=chatgpt.com"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="BrainX India LinkedIn Page"
                   className="flex items-center gap-2 text-slate-700 hover:text-[#0a66c2]"
                 >
                   <OriginalLinkedinIcon className="w-5 h-5" /> LinkedIn
@@ -826,6 +832,7 @@ export default function App() {
                   href="http://www.youtube.com/@brainxmasters4159?utm_source=chatgpt.com"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="BrainX Masters YouTube Channel"
                   className="flex items-center gap-2 text-slate-700 hover:text-[#ff0000]"
                 >
                   <OriginalYoutubeIcon className="w-5 h-5" /> YouTube
@@ -933,7 +940,7 @@ export default function App() {
                 
                 {/* 1. Cinematic Hero Photography */}
                 <div className="w-full relative rounded-3xl overflow-hidden border border-slate-200/85 shadow-2xl hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-500 group">
-                  <img src="/images/hero_image_1781776606478.png" fetchPriority="high" alt="Confident Child with Neuro-Headset" className="w-full aspect-[4/3] md:aspect-[4/3.5] object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out" />
+                  <img src="/images/hero_image_1781776606478.webp" fetchPriority="high" alt="Confident Child with Neuro-Headset" className="w-full aspect-[4/3] md:aspect-[4/3.5] object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out" />
                   
                   {/* Tech overlay scanner tags */}
                   <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-indigo-900/80 backdrop-blur-md border border-indigo-500/30 text-[9px] text-indigo-100 font-mono font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
@@ -974,6 +981,7 @@ export default function App() {
                         max="12" 
                         value={screenTime} 
                         onChange={(e) => setScreenTime(parseInt(e.target.value))}
+                        aria-label="Smart Screen Exposure Time Slider"
                         className="w-full h-1 bg-slate-200 rounded accent-indigo-600 cursor-pointer"
                       />
                     </div>
@@ -990,6 +998,7 @@ export default function App() {
                           max="10" 
                           value={restlessness} 
                           onChange={(e) => setRestlessness(parseInt(e.target.value))}
+                          aria-label="Tantrums Scale Slider"
                           className="w-full h-1 bg-slate-200 rounded accent-violet-600 cursor-pointer"
                         />
                       </div>
@@ -1005,6 +1014,7 @@ export default function App() {
                           max="10" 
                           value={concentration} 
                           onChange={(e) => setConcentration(parseInt(e.target.value))}
+                          aria-label="Study Focus Span Slider"
                           className="w-full h-1 bg-slate-200 rounded accent-amber-600 cursor-pointer"
                         />
                       </div>
@@ -1105,7 +1115,9 @@ export default function App() {
 
               {/* Spectacular Interactive Graphical Dashboard */}
               <div className="mb-12">
-                <BiometricInteractiveDashboard />
+                <Suspense fallback={<div className="h-48 flex items-center justify-center font-mono text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-3xl">Loading interactive dashboard...</div>}>
+                  <BiometricInteractiveDashboard />
+                </Suspense>
               </div>
 
               {/* Side-by-Side Graphical Card Comparison */}
@@ -1388,7 +1400,9 @@ export default function App() {
                 </p>
               </div>
 
-              <AetheriaAssistant />
+              <Suspense fallback={<div className="h-48 flex items-center justify-center font-mono text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-3xl">Loading AI Assistant...</div>}>
+                <AetheriaAssistant />
+              </Suspense>
             </section>            {/* SEAT BOOKING & COMPLIMENTARY VOUCHERS REGISTRATION */}
             <section 
               className="bg-slate-50 py-20 border-y border-slate-200/80 relative"
@@ -1427,8 +1441,9 @@ export default function App() {
                 ) : (
                   <form onSubmit={handleBookingSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-3xl mx-auto bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-slate-500 uppercase font-bold">Parent Full Name *</label>
+                      <label htmlFor="booking-name" className="text-[10px] font-mono text-slate-500 uppercase font-bold">Parent Full Name *</label>
                       <input 
+                        id="booking-name"
                         type="text" 
                         required 
                         placeholder="e.g. Anand Deshpande" 
@@ -1439,8 +1454,9 @@ export default function App() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-slate-500 uppercase font-bold">WhatsApp Active Number *</label>
+                      <label htmlFor="booking-phone" className="text-[10px] font-mono text-slate-500 uppercase font-bold">WhatsApp Active Number *</label>
                       <input 
+                        id="booking-phone"
                         type="tel" 
                         required 
                         placeholder="e.g. +91 98200 12345" 
@@ -1451,8 +1467,9 @@ export default function App() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-slate-500 uppercase font-bold">Nearest Center Location</label>
+                      <label htmlFor="booking-location" className="text-[10px] font-mono text-slate-500 uppercase font-bold">Nearest Center Location</label>
                       <select 
+                        id="booking-location"
                         value={bookingLocation}
                         onChange={(e) => setBookingLocation(e.target.value)}
                         className="w-full text-xs font-mono bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 cursor-pointer"
@@ -1463,8 +1480,9 @@ export default function App() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-slate-500 uppercase font-bold">Target Program Domain</label>
+                      <label htmlFor="booking-program" className="text-[10px] font-mono text-slate-500 uppercase font-bold">Target Program Domain</label>
                       <select 
+                        id="booking-program"
                         value={bookingProgram}
                         onChange={(e) => setBookingProgram(e.target.value)}
                         className="w-full text-xs font-mono bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 cursor-pointer"
@@ -1672,7 +1690,7 @@ export default function App() {
                           <span className="text-sm font-display font-bold text-slate-800 hover:text-indigo-600 transition-colors">
                             {faq.q}
                           </span>
-                          <span className="text-xs font-bold text-slate-400 select-none">
+                          <span className="text-xs font-bold text-slate-650 select-none">
                             {isOpen ? "Collapse" : "Expand"}
                           </span>
                         </button>
@@ -1992,6 +2010,7 @@ export default function App() {
                           placeholder="Parent Full Name" 
                           value={bookingName}
                           onChange={(e) => setBookingName(e.target.value)}
+                          aria-label="Parent Full Name for Direct Screening"
                           className="w-full text-xs font-mono bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                         />
                         <input 
@@ -2000,6 +2019,7 @@ export default function App() {
                           placeholder="WhatsApp Phone Number" 
                           value={bookingPhone}
                           onChange={(e) => setBookingPhone(e.target.value)}
+                          aria-label="WhatsApp Phone Number for Direct Screening"
                           className="w-full text-xs font-mono bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                         />
                         <button 
@@ -2088,15 +2108,15 @@ export default function App() {
                 {/* Franchise fast requirements parameters */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-center">
-                    <span className="block text-xs font-mono text-slate-400">REQUIREMENT</span>
+                    <span className="block text-xs font-mono text-slate-600">REQUIREMENT</span>
                     <p className="text-[11px] font-bold text-slate-800 mt-1">300-500 Sq Ft</p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-center">
-                    <span className="block text-xs font-mono text-slate-400">BREAKEVEN</span>
+                    <span className="block text-xs font-mono text-slate-600">BREAKEVEN</span>
                     <p className="text-[11px] font-bold text-slate-800 mt-1">3-6 Months</p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-center">
-                    <span className="block text-xs font-mono text-slate-400">ROYALTY</span>
+                    <span className="block text-xs font-mono text-slate-600">ROYALTY</span>
                     <p className="text-[11px] font-bold text-emerald-700 mt-1">0% Plan</p>
                   </div>
                 </div>
@@ -2116,8 +2136,9 @@ export default function App() {
                 ) : (
                   <form onSubmit={handleFranchiseSubmit} className="space-y-4 pt-4 border-t border-slate-100 text-xs">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-mono uppercase text-slate-500 block font-bold">Your Name *</label>
+                      <label htmlFor="franchise-name" className="text-[10px] font-mono uppercase text-slate-500 block font-bold">Your Name *</label>
                       <input 
+                        id="franchise-name"
                         type="text" 
                         required 
                         placeholder="e.g. Rajesh Kumar" 
@@ -2129,8 +2150,9 @@ export default function App() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Active Phone *</label>
+                        <label htmlFor="franchise-phone" className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Active Phone *</label>
                         <input 
+                          id="franchise-phone"
                           type="tel" 
                           required 
                           placeholder="e.g. 98450 12345" 
@@ -2141,8 +2163,9 @@ export default function App() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Planned City *</label>
+                        <label htmlFor="franchise-city" className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Planned City *</label>
                         <input 
+                          id="franchise-city"
                           type="text" 
                           required 
                           placeholder="e.g. Pune" 
@@ -2155,8 +2178,9 @@ export default function App() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Expected State</label>
+                        <label htmlFor="franchise-state" className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Expected State</label>
                         <select 
+                          id="franchise-state"
                           value={franchiseState}
                           onChange={(e) => setFranchiseState(e.target.value)}
                           className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 cursor-pointer"
@@ -2168,14 +2192,16 @@ export default function App() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-emerald-700 block font-bold">Investment Sliders</label>
+                        <label htmlFor="franchise-investment" className="text-[10px] font-mono uppercase text-emerald-700 block font-bold">Investment Sliders</label>
                         <input 
+                          id="franchise-investment"
                           type="range" 
                           min="300000" 
                           max="1500000" 
                           step="50000"
                           value={franchiseInvestment}
                           onChange={(e) => setFranchiseInvestment(parseInt(e.target.value))}
+                          aria-label="Expected Investment Budget range"
                           className="w-full accent-emerald-650 cursor-pointer text-xs"
                         />
                         <div className="font-mono text-[10px] text-emerald-700 text-right mt-1 font-bold">
@@ -2240,8 +2266,9 @@ export default function App() {
                 ) : (
                   <form onSubmit={handleSchoolSubmit} className="space-y-4 pt-4 border-t border-slate-100 text-xs">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-mono uppercase text-slate-500 block font-bold">School Name *</label>
+                      <label htmlFor="school-name" className="text-[10px] font-mono uppercase text-slate-500 block font-bold">School Name *</label>
                       <input 
+                        id="school-name"
                         type="text" 
                         required 
                         placeholder="e.g. Pune Academic International School" 
@@ -2253,8 +2280,9 @@ export default function App() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Contact Coordinator *</label>
+                        <label htmlFor="school-coordinator" className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Contact Coordinator *</label>
                         <input 
+                          id="school-coordinator"
                           type="text" 
                           required 
                           placeholder="e.g. Sister Maria D'souza" 
@@ -2265,8 +2293,9 @@ export default function App() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Coordinator Phone *</label>
+                        <label htmlFor="school-phone" className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Coordinator Phone *</label>
                         <input 
+                          id="school-phone"
                           type="tel" 
                           required 
                           placeholder="e.g. 98230 45678" 
@@ -2279,8 +2308,9 @@ export default function App() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-505 block font-bold">City Location</label>
+                        <label htmlFor="school-city" className="text-[10px] font-mono uppercase text-slate-505 block font-bold">City Location</label>
                         <input 
+                          id="school-city"
                           type="text" 
                           required 
                           placeholder="e.g. Pune" 
@@ -2291,8 +2321,9 @@ export default function App() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Student Strength</label>
+                        <label htmlFor="school-strength" className="text-[10px] font-mono uppercase text-slate-505 block font-bold">Student Strength</label>
                         <select 
+                          id="school-strength"
                           value={schoolStudentStrength}
                           onChange={(e) => setSchoolStudentStrength(e.target.value)}
                           className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 cursor-pointer"
@@ -2476,7 +2507,7 @@ export default function App() {
                       </div>
                       <div>
                         <span className="font-bold text-slate-800 block">{t.parentName}</span>
-                        <span className="text-slate-400 text-[10px] font-mono uppercase">{t.parentProfession}</span>
+                        <span className="text-slate-600 text-[10px] font-mono uppercase">{t.parentProfession}</span>
                       </div>
                     </div>
                     <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
@@ -2518,7 +2549,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Mr. &amp; Mrs. Kulkarni</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">Software Engineer &amp; School Vice Principal (Pune)</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">Software Engineer &amp; School Vice Principal (Pune)</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Arjun, Age 11 (Gaming Addiction, Attention Deficit)
@@ -2554,7 +2585,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Mrs. Sunita Iyer</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">Senior Bank Manager (Mumbai)</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">Senior Bank Manager (Mumbai)</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Priya, Age 14 (Severe Stage Fright, Low Social Confidence)
@@ -2590,7 +2621,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Mr. Ashok &amp; Mrs. Meera Patil</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">Civil Engineer &amp; Homemaker (Nashik)</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">Civil Engineer &amp; Homemaker (Nashik)</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Rohan, Age 10 (Misdiagnosed Learning Difficulty)
@@ -2626,7 +2657,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Mr. Vikram &amp; Mrs. Lata Joshi</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">Chartered Accountant &amp; Yoga Instructor (Pune)</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">Chartered Accountant &amp; Yoga Instructor (Pune)</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Nikhil, Age 16 (Peer Pressure, Digital Dependency)
@@ -2662,7 +2693,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Dr. Nitin &amp; Mrs. Swapna Rane</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">Pediatrician &amp; Child Psychologist</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">Pediatrician &amp; Child Psychologist</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Kavya, Age 6 (Pune)
@@ -2698,7 +2729,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Mr. &amp; Mrs. Kapoor</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">Business Owner &amp; HR Director</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">Business Owner &amp; HR Director</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Aryan (12) &amp; Mia (8) (Pune)
@@ -2734,7 +2765,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Mrs. Fatima Shaikh</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">Nutritionist</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">Nutritionist</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Sameer, Age 13 (Aurangabad)
@@ -2770,7 +2801,7 @@ export default function App() {
                 <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block">Prof. &amp; Mrs. Venkataraman</span>
-                    <span className="text-slate-400 text-[10px] font-mono uppercase">IIT Professionals &amp; Child Therapists</span>
+                    <span className="text-slate-600 text-[10px] font-mono uppercase">IIT Professionals &amp; Child Therapists</span>
                   </div>
                   <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded font-bold">
                     Profile: Twins Dev &amp; Diya, Age 9 (Bangalore)
@@ -2802,7 +2833,7 @@ export default function App() {
                   <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs font-sans">
                     <div>
                       <span className="font-bold text-slate-800 block">{c.parentName}</span>
-                      <span className="text-slate-400 text-[10px] font-mono uppercase">{c.parentProfession}</span>
+                      <span className="text-slate-600 text-[10px] font-mono uppercase">{c.parentProfession}</span>
                     </div>
                     <span className="font-mono text-indigo-700 uppercase text-[10px] bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded font-bold">
                       Profile: {c.childProfile}
@@ -3149,8 +3180,9 @@ export default function App() {
                     )}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-500 block font-bold">Parent Name *</label>
+                        <label htmlFor="consult-parent-name" className="text-[10px] font-mono uppercase text-slate-500 block font-bold">Parent Name *</label>
                         <input 
+                          id="consult-parent-name"
                           type="text" 
                           required 
                           placeholder="e.g. Anand Deshpande" 
@@ -3161,8 +3193,9 @@ export default function App() {
                       </div>
  
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-550 block font-bold">WhatsApp Active Phone *</label>
+                        <label htmlFor="consult-whatsapp" className="text-[10px] font-mono uppercase text-slate-550 block font-bold">WhatsApp Active Phone *</label>
                         <input 
+                          id="consult-whatsapp"
                           type="tel" 
                           required 
                           placeholder="e.g. +91 98230 11111" 
@@ -3175,8 +3208,9 @@ export default function App() {
  
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-1 col-span-2">
-                        <label className="text-[10px] font-mono uppercase text-slate-550 block font-bold">Target Academy Protocols</label>
+                        <label htmlFor="consult-protocol" className="text-[10px] font-mono uppercase text-slate-550 block font-bold">Target Academy Protocols</label>
                         <select 
+                          id="consult-protocol"
                           value={targetProtocol}
                           onChange={(e) => setTargetProtocol(e.target.value)}
                           className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 cursor-pointer"
@@ -3189,8 +3223,9 @@ export default function App() {
                       </div>
  
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono uppercase text-slate-550 block font-bold">Child Age</label>
+                        <label htmlFor="consult-child-age" className="text-[10px] font-mono uppercase text-slate-550 block font-bold">Child Age</label>
                         <input 
+                          id="consult-child-age"
                           type="number" 
                           required 
                           min="2" 
@@ -3203,8 +3238,9 @@ export default function App() {
                     </div>
  
                     <div className="space-y-1">
-                      <label className="text-[10px] font-mono uppercase text-slate-550 block font-bold">Preferred Scan Center Location</label>
+                      <label htmlFor="consult-location" className="text-[10px] font-mono uppercase text-slate-550 block font-bold">Preferred Scan Center Location</label>
                       <select 
+                        id="consult-location"
                         value={preferredLocation}
                         onChange={(e) => setPreferredLocation(e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 cursor-pointer"
@@ -3358,31 +3394,33 @@ export default function App() {
 
         {/* PAGE 9: ADMIN CONTROL PANEL / LOGIN */}
         {currentPage === "admin" && (
-          isAdminLoggedIn ? (
-            <AdminPanel
-              dynamicEvents={dynamicEvents}
-              setDynamicEvents={setDynamicEvents}
-              extraCaseFiles={extraCaseFiles}
-              setExtraCaseFiles={setExtraCaseFiles}
-              customerLogs={customerLogs}
-              setCustomerLogs={setCustomerLogs}
-              onLogout={() => {
-                setIsAdminLoggedIn(false);
-                sessionStorage.removeItem("admin_token");
-                handlePageChange("home");
-              }}
-            />
-          ) : (
-            <AdminLogin
-              onLoginSuccess={(token) => {
-                setIsAdminLoggedIn(true);
-                sessionStorage.setItem("admin_token", token);
-              }}
-              onCancel={() => {
-                handlePageChange("home");
-              }}
-            />
-          )
+          <Suspense fallback={<div className="min-h-[60vh] flex flex-col items-center justify-center font-mono text-xs text-slate-500 p-6">Loading Admin Portal...</div>}>
+            {isAdminLoggedIn ? (
+              <AdminPanel
+                dynamicEvents={dynamicEvents}
+                setDynamicEvents={setDynamicEvents}
+                extraCaseFiles={extraCaseFiles}
+                setExtraCaseFiles={setExtraCaseFiles}
+                customerLogs={customerLogs}
+                setCustomerLogs={setCustomerLogs}
+                onLogout={() => {
+                  setIsAdminLoggedIn(false);
+                  sessionStorage.removeItem("admin_token");
+                  handlePageChange("home");
+                }}
+              />
+            ) : (
+              <AdminLogin
+                onLoginSuccess={(token) => {
+                  setIsAdminLoggedIn(true);
+                  sessionStorage.setItem("admin_token", token);
+                }}
+                onCancel={() => {
+                  handlePageChange("home");
+                }}
+              />
+            )}
+          </Suspense>
         )}
 
       </main>
@@ -3422,6 +3460,7 @@ export default function App() {
             onClick={() => setIsWhatsAppOpen(true)}
             className="p-4 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white transition-all shadow-[0_4px_20px_rgba(16,185,129,0.4)] cursor-pointer flex items-center justify-center font-bold"
             title="Claim Diagnostic scan slots via WhatsApp"
+            aria-label="Open WhatsApp consultation panel"
           >
             <Smartphone className="w-6 h-6 animate-pulse" />
           </button>
@@ -3456,6 +3495,7 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="w-8 h-8 bg-indigo-900/30 border border-indigo-500/30 hover:bg-[#0a66c2] hover:border-[#0a66c2] text-slate-300 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-sm"
                 title="LinkedIn Profile"
+                aria-label="BrainX India LinkedIn Page"
               >
                 <OriginalLinkedinIcon className="w-4 h-4" />
               </a>
@@ -3465,6 +3505,7 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="w-8 h-8 bg-indigo-900/30 border border-indigo-500/30 hover:bg-[#ff0000] hover:border-[#ff0000] text-slate-300 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-sm"
                 title="BrainX Masters YouTube Channel"
+                aria-label="BrainX Masters YouTube Channel"
               >
                 <OriginalYoutubeIcon className="w-4 h-4" />
               </a>
@@ -3534,7 +3575,7 @@ export default function App() {
 
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pt-8 border-t border-indigo-900/50 mt-12 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-slate-500 gap-4">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 pt-8 border-t border-indigo-900/50 mt-12 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-slate-400 gap-4">
           <span 
             className="hover:text-indigo-400 transition-colors select-none"
           >
