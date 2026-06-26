@@ -1171,7 +1171,7 @@ export default function AdminPanel({
                       {c.programName}
                     </span>
                   </div>
-                  <h4 className="text-base font-bold text-slate-905">
+                  <h4 className="text-base font-bold text-slate-900">
                     "{c.headline}"
                   </h4>
                   <p className="text-xs text-slate-500 font-sans italic">

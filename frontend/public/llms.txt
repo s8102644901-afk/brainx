@@ -1,0 +1,16 @@
+# BrainX India
+
+> BrainX India is a premier pediatric brain science, biometrics, and mental math training organization in Pune, Maharashtra.
+
+This website provides information about child cognitive development programs, scientific biometrics (DMIT), midbrain activation (Centre Brain Ignition), mental arithmetic (Abacus), and parenting support.
+
+## Key Navigation Links
+
+- [Home](/#home) - Main portal and introduction to our brain science programs.
+- [Origins](/#about) - The history, philosophy, and neuroscience behind BrainX.
+- [Academies](/#programs) - Overview of our cognitive programs, DMIT testing, and Abacus training.
+- [Partnerships](/#partners) - Information for schools, franchises, and corporate collaboration.
+- [Impact](/#stories) - Clinical case studies and child progress chronicles.
+- [Resources](/#resources) - Scientific references, FAQs, and sensory overstimulation diagnostics.
+- [Gallery](/#gallery) - Glimpses of active centers, parent seminars, and student cohorts.
+- [Contact](/#contact) - Booking details for diagnostic scan slots and counseling sessions.

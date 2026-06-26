@@ -861,7 +861,7 @@ export default function App() {
                    {/* Main Headline */}
                    <h1 className="text-4xl sm:text-6xl font-display font-black leading-[1.08] tracking-tight text-[#0f172a]">
                      BrainX India – <br/>
-                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-905">
+                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-900">
                        DMIT Test, Midbrain Activation & Abacus Classes in Pune
                      </span>
                    </h1>
@@ -925,10 +925,11 @@ export default function App() {
                      <iframe 
                        width="100%" 
                        height="100%" 
-                       src="https://www.youtube.com/embed/19eQAc3FMlk?si=zVImzYT-zTYPc466" 
+                       src="https://www.youtube-nocookie.com/embed/19eQAc3FMlk?si=zVImzYT-zTYPc466" 
                        title="BrainX India Video" 
                        frameBorder="0" 
                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                       loading="lazy"
                        allowFullScreen>
                      </iframe>
                    </div>
@@ -1428,7 +1429,7 @@ export default function App() {
                 {bookingResponse ? (
                   <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-mono text-xs text-left max-w-2xl mx-auto space-y-3 shadow-sm">
                     <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-                    <h5 className="font-bold text-sm text-slate-905">Biometric Diagnostic Seat Provisionally Secured!</h5>
+                    <h5 className="font-bold text-sm text-slate-900">Biometric Diagnostic Seat Provisionally Secured!</h5>
                     <p className="leading-relaxed">{bookingResponse}</p>
                     <button 
                       type="button" 
@@ -1531,7 +1532,7 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
                 {/* DMIT Test Pune */}
                 <div id="seo-dmit" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
-                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                  <h3 className="text-xl font-display font-bold text-slate-900 flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-indigo-650"></span>
                     DMIT Test Pune
                   </h3>
@@ -1550,7 +1551,7 @@ export default function App() {
 
                 {/* Midbrain Activation Pune */}
                 <div id="seo-midbrain" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
-                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                  <h3 className="text-xl font-display font-bold text-slate-900 flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-violet-650"></span>
                     Midbrain Activation Pune
                   </h3>
@@ -1569,7 +1570,7 @@ export default function App() {
 
                 {/* Abacus Classes Pune */}
                 <div id="seo-abacus" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
-                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                  <h3 className="text-xl font-display font-bold text-slate-900 flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
                     Abacus Classes Pune
                   </h3>
@@ -1588,7 +1589,7 @@ export default function App() {
 
                 {/* Child Brain Development Pune */}
                 <div id="seo-development" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-150 shadow-sm space-y-4 hover:border-indigo-500/25 transition-all">
-                  <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                  <h3 className="text-xl font-display font-bold text-slate-900 flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
                     Child Brain Development Pune
                   </h3>
@@ -1608,7 +1609,7 @@ export default function App() {
 
               {/* Parenting Workshop Pune Section */}
               <div id="seo-parenting" className="p-6 sm:p-10 bg-indigo-50/50 border border-indigo-100 rounded-3xl space-y-4">
-                <h3 className="text-xl font-display font-bold text-slate-905 flex items-center gap-2">
+                <h3 className="text-xl font-display font-bold text-slate-900 flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-pulse"></span>
                   Parenting Workshop Pune
                 </h3>
