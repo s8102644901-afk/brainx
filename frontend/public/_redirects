@@ -1,1 +1,13 @@
-/*    /index.html   200
+/api/submit-to-sheets /.netlify/functions/submit-to-sheets 200
+/api/admin/login /.netlify/functions/admin-login 200
+/api/admin/analytics /.netlify/functions/admin-analytics 200
+/api/health /.netlify/functions/health 200
+/api/parenting-assistant /.netlify/functions/parenting-assistant 200
+/api/generate-summary /.netlify/functions/generate-summary 200
+
+https://www.brainxindia.com/* https://brainxindia.com/:splat 301!
+http://www.brainxindia.com/* https://brainxindia.com/:splat 301!
+https://www.brainxpune1.netlify.app/* https://brainxpune1.netlify.app/:splat 301!
+http://www.brainxpune1.netlify.app/* https://brainxpune1.netlify.app/:splat 301!
+
+/* /index.html 200
