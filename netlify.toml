@@ -1,3 +1,45 @@
+[build]
+  command = "npm install --prefix frontend && npm run build --prefix frontend"
+  publish = "frontend/dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# ─── API Redirects (MUST come before the SPA catch-all) ───
+
+[[redirects]]
+  from = "/api/submit-to-sheets"
+  to = "/.netlify/functions/submit-to-sheets"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/login"
+  to = "/.netlify/functions/admin-login"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/analytics"
+  to = "/.netlify/functions/admin-analytics"
+  status = 200
+
+[[redirects]]
+  from = "/api/health"
+  to = "/.netlify/functions/health"
+  status = 200
+
+[[redirects]]
+  from = "/api/parenting-assistant"
+  to = "/.netlify/functions/parenting-assistant"
+  status = 200
+
+[[redirects]]
+  from = "/api/generate-summary"
+  to = "/.netlify/functions/generate-summary"
+  status = 200
+
+# ─── Domain Redirects ───
+
 [[redirects]]
   from = "https://www.brainxindia.com/*"
   to = "https://brainxindia.com/:splat"
@@ -22,9 +64,9 @@
   status = 301
   force = true
 
+# ─── SPA Catch-all (MUST be last) ───
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-
